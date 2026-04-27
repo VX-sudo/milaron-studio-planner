@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Milaron Studio — Premium Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "secondary-container": "#fcd400", "surface-container-highest": "#e2e2e2",
+        "surface-bright": "#f9f9f9", "primary": "#000000", "surface": "#f9f9f9",
+        "secondary-fixed-dim": "#e9c400", "primary-fixed-dim": "#c6c6c6",
+        "on-tertiary-container": "#808487", "primary-fixed": "#e2e2e2",
+        "tertiary-fixed-dim": "#c3c7ca", "on-surface-variant": "#4c4546",
+        "on-secondary-container": "#6e5c00", "secondary": "#705d00",
+        "on-secondary": "#ffffff", "tertiary-container": "#181c1e",
+        "surface-variant": "#e2e2e2", "surface-container-high": "#e8e8e8",
+        "inverse-on-surface": "#f0f1f1", "surface-dim": "#dadada",
+        "on-error": "#ffffff", "tertiary-fixed": "#e0e3e6",
+        "on-tertiary-fixed-variant": "#43474a", "on-primary-container": "#848484",
+        "error-container": "#ffdad6", "on-tertiary": "#ffffff",
+        "background": "#f9f9f9", "on-error-container": "#93000a",
+        "surface-container": "#eeeeee", "on-surface": "#1a1c1c",
+        "on-secondary-fixed": "#221b00", "surface-container-low": "#f3f3f4",
+        "inverse-surface": "#2f3131", "tertiary": "#000000",
+        "surface-container-lowest": "#ffffff", "outline": "#7e7576",
+        "outline-variant": "#cfc4c5", "on-tertiary-fixed": "#181c1e",
+        "on-primary": "#ffffff", "error": "#ba1a1a", "secondary-fixed": "#ffe16d",
+        "on-background": "#1a1c1c", "primary-container": "#1b1b1b",
+        "on-secondary-fixed-variant": "#544600", "on-primary-fixed-variant": "#474747",
+        "on-primary-fixed": "#1b1b1b", "surface-tint": "#5e5e5e",
+        "inverse-primary": "#c6c6c6"
+      },
+      borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+      fontFamily: {
+        "manrope": ["Manrope"], "inter": ["Inter"]
+      }
+    }
+  }
+}
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; display:inline-block; vertical-align:middle; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .dot-grid { background-image:radial-gradient(circle,#000 1px,transparent 1px); background-size:24px 24px; opacity:0.07; pointer-events:none; }
+  .page { display:none; flex-direction:column; height:100%; overflow:hidden; }
+  .page.active { display:flex; }
+  .nav-link { display:flex; align-items:center; gap:12px; padding:12px 24px; color:#a3a3a3; transition:color .15s,background .15s; cursor:pointer; font-size:14px; }
+  .nav-link:hover { color:#fff; background:rgba(255,255,255,.05); }
+  .nav-link.active { color:#facc15; background:rgba(255,255,255,.05); border-right:2px solid #facc15; }
+  .spec-panel { width:0; min-width:0; overflow:hidden; transition:width .3s ease, min-width .3s ease; }
+  .spec-panel.open { width:420px; min-width:420px; }
+  .equipment-item { user-select:none; cursor:grab; }
+  .equipment-item:active { cursor:grabbing; }
+  .equipment-item:hover .clearance { opacity:1; }
+  .clearance { opacity:0; transition:opacity .2s; pointer-events:none; }
+  .tf-btn { padding:8px 20px; font-size:12px; letter-spacing:.08em; font-weight:700; color:#4c4546; cursor:pointer; border-radius:6px; }
+  .tf-btn.active { background:#fff; color:#000; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+  input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { opacity:.4; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#000; color:#fff; padding:12px 24px; border-radius:8px; font-size:12px; letter-spacing:.08em; font-weight:700; transition:transform .3s ease; z-index:9999; pointer-events:none; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  /* Modals */
+  .modal { display:none; position:fixed; inset:0; z-index:200; align-items:center; justify-content:center; }
+  .modal.open { display:flex; }
+  .modal-bg { position:absolute; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); }
+  .modal-box { position:relative; z-index:1; background:#fff; border-radius:20px; overflow:hidden; }
+  /* Planner profit panel */
+  .planner-panel { width:260px; min-width:260px; }
+  /* Pill button for orientation selector */
+  .orient-btn { padding:6px 16px; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; border:1px solid #e5e5e5; color:#737373; transition:all .15s; }
+  .orient-btn.active { background:#000; color:#fff; border-color:#000; }
+  /* Eq filter buttons */
+  .eq-filter { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+</style>
+</head>
+<body class="bg-[#f9f9f9] text-[#1a1c1c] font-inter overflow-hidden h-screen flex">
+
+<!-- ========== SIDEBAR ========== -->
+<aside class="flex-shrink-0 w-64 h-full bg-black flex flex-col z-50">
+  <div class="px-8 py-10">
+    <span class="text-white font-manrope font-bold text-xl tracking-tighter uppercase">Milaron Studio</span>
+    <p class="text-[10px] text-neutral-500 tracking-[0.2em] mt-1 uppercase">Premium Management</p>
+  </div>
+  <nav class="flex-1 space-y-1">
+    <div class="nav-link" data-page="dashboard"><span class="material-symbols-outlined">dashboard</span> Dashboard</div>
+    <div class="nav-link" data-page="planner"><span class="material-symbols-outlined">architecture</span> Studio Planner</div>
+    <div class="nav-link" data-page="profit"><span class="material-symbols-outlined">analytics</span> Profit Analysis</div>
+  </nav>
+  <div class="border-t border-white/10 py-6 space-y-1">
+    <div class="nav-link"><span class="material-symbols-outlined">settings</span> Settings</div>
+    <div class="nav-link"><span class="material-symbols-outlined">help</span> Support</div>
+  </div>
+</aside>
+
+<!-- ========== MAIN WRAPPER ========== -->
+<div class="flex-1 h-screen overflow-hidden flex flex-col">
+
+<!-- ===========================
+     PAGE: DASHBOARD + EQUIPMENT
+     =========================== -->
+<div id="page-dashboard" class="page">
+  <header class="flex-shrink-0 flex justify-between items-center px-16 h-20 bg-[#EEF1F4]/90 backdrop-blur-md border-b border-black/5">
+    <div class="flex items-center gap-6">
+      <h1 class="font-manrope font-semibold text-2xl text-black">Studio Overview</h1>
+      <div class="h-5 w-px bg-[#cfc4c5]"></div>
+      <div class="flex gap-5" id="eq-filter-btns">
+        <button class="eq-filter text-black border-b border-black pb-0.5" data-tier="all" onclick="filterEquipment('all')">All</button>
+        <button class="eq-filter text-neutral-400 hover:text-black transition-colors" data-tier="standard" onclick="filterEquipment('standard')">Standard</button>
+        <button class="eq-filter text-neutral-400 hover:text-black transition-colors" data-tier="premium" onclick="filterEquipment('premium')">Premium</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-lg">search</span>
+        <input id="eq-search" class="pl-10 pr-4 py-2 bg-white border border-black/10 rounded-lg focus:border-black focus:outline-none text-sm w-56 transition-all" placeholder="Search equipment..." oninput="searchEquipment(this.value)">
+      </div>
+      <span class="text-[11px] font-bold text-neutral-400 uppercase tracking-widest" id="dash-date"></span>
+      <button class="px-5 py-2 bg-black text-white text-[11px] font-bold tracking-widest uppercase rounded-lg hover:bg-zinc-800 transition-colors" onclick="navigate('planner')">Open Planner</button>
+    </div>
+  </header>
+  <div class="flex-1 flex overflow-hidden">
+    <div class="flex-1 overflow-y-auto no-scrollbar px-16 py-10">
+      <!-- Metrics -->
+      <div class="grid grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+          <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Total Reformers</p>
+          <div class="flex items-baseline gap-2"><span class="text-4xl font-manrope font-semibold text-[#705d00]" id="dash-reformers">0</span><span class="text-sm text-neutral-400 font-medium">units</span></div>
+        </div>
+        <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+          <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Active Rooms</p>
+          <div class="flex items-baseline gap-2"><span class="text-4xl font-manrope font-semibold text-[#705d00]" id="dash-rooms">1</span><span class="text-sm text-neutral-400 font-medium">hubs</span></div>
+        </div>
+        <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+          <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Monthly Revenue</p>
+          <div class="flex items-baseline gap-1"><span class="text-4xl font-manrope font-semibold text-[#705d00]" id="dash-revenue">$0</span></div>
+        </div>
+        <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+          <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Net Profit / Mo</p>
+          <div class="flex items-baseline gap-1"><span class="text-4xl font-manrope font-semibold text-[#705d00]" id="dash-profit">$0</span></div>
+        </div>
+      </div>
+      <!-- Section label -->
+      <div class="mb-6">
+        <p class="text-[10px] font-bold tracking-[0.3em] uppercase text-neutral-400">Hardware Catalog / V4.2</p>
+        <h2 class="font-manrope font-bold text-3xl mt-1">Equipment Library</h2>
+      </div>
+      <!-- Equipment Grid -->
+      <div id="equipment-grid" class="grid grid-cols-3 gap-6 pb-12">
+
+        <!-- Milaron Studio -->
+        <div class="equipment-card bg-white border border-black/5 rounded-xl overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-2xl" data-name="milaron studio" data-tier="standard" data-catalog-id="studio">
+          <div class="aspect-[4/3] bg-[#f3f3f4] flex items-center justify-center p-10 relative overflow-hidden">
+            <img alt="Milaron Studio Reformer" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_M-BkZvsTv7ItaOUn5RRT8HaVwPqK1k8r5nm9ltti2AWafOKqnbCKyKhc2jaB8wgvxQVB1LhCY_lxVTqgI8FdYN0x4GOgHiXx7DK2-F3tzrZfjeurCX3DRgQmrjzaXAXhZ-YyuU89pQ6rZ1djNXmyYBebUHDjRazTeoUvRdMC4_HQzxCQNP5UGszLczw-B0Js0iHzDGIOori50-mPl-l7UusRaqSLMJlWIUMf8x6EY7GCe32UFIngcZfn0UXvKAnSCJUE4toq8BOy">
+          </div>
+          <div class="p-6 flex flex-col flex-1 gap-3">
+            <div class="flex justify-between items-start">
+              <h3 class="font-manrope font-semibold text-xl">Milaron Studio</h3>
+              <span class="text-[9px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-2 py-1 rounded">STANDARD</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-3">
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">2400mm</p></div>
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">690mm</p></div>
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">350mm</p></div>
+            </div>
+            <button class="mt-auto w-full border border-black/10 text-black text-[10px] font-bold tracking-widest uppercase py-4 rounded-lg hover:bg-black hover:text-white transition-all" onclick="openSpec('studio','Milaron Studio','STANDARD','2400mm','690mm','350mm','Steel / Beech','160 KG','4-Spring Config','Vegan Leather','3,200')">View Technical Specs</button>
+          </div>
+        </div>
+
+        <!-- Milaron Elite -->
+        <div class="equipment-card bg-white border-2 border-black rounded-xl overflow-hidden flex flex-col group transition-all duration-500 ring-4 ring-black/5 shadow-2xl shadow-black/10" data-name="milaron elite" data-tier="premium" data-catalog-id="elite">
+          <div class="aspect-[4/3] bg-[#f3f3f4] flex items-center justify-center p-10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-[#fcd400] text-[#6e5c00] text-[9px] font-bold tracking-[0.15em] uppercase px-4 py-2 rounded-bl-lg flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">star</span> PREMIUM
+            </div>
+            <img alt="Milaron Elite" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8L5UvjDTqwdJ_tGz3cMMGRqnivMfbl9OShzdLqsB73k6e1Rgw6bbYtoLY0bg6ZnK3MiKmiQMd0eQzE1faE52bts2iuWVE6-9ApSo1JwQHgv6yU3wbliFxoUt_X8wqluHnbmDiBeikHu-ocv3UJRhe4yFgJxBRMMYWl4mNX1mWFMYuChGBMjzYgxZOa8Bgj_gtaBL-gQPvnIU7sH8XTwEYXsLgpEVd4C83hRYZ34IB45gQ62UvnWgCw6xY_4-4qY9POWvpNl2vUVLv">
+          </div>
+          <div class="p-6 flex flex-col flex-1 gap-3">
+            <div class="flex justify-between items-start">
+              <h3 class="font-manrope font-semibold text-xl">Milaron Elite</h3>
+              <span class="text-[9px] font-bold tracking-widest uppercase bg-[#ffe16d] text-[#221b00] px-2 py-1 rounded">ACTIVE</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-3">
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">2450mm</p></div>
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">720mm</p></div>
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">400mm</p></div>
+            </div>
+            <button class="mt-auto w-full bg-black text-white text-[10px] font-bold tracking-widest uppercase py-4 rounded-lg hover:bg-zinc-800 transition-all" onclick="openSpec('elite','Milaron Elite','PREMIUM','2450mm','720mm','400mm','Anodized Aluminium / Beech','180 KG','6-Spring Custom Config','Antimicrobial Vegan Leather','4,850')">View Technical Specs</button>
+          </div>
+        </div>
+
+        <!-- Milaron Pro II -->
+        <div class="equipment-card bg-white border border-black/5 rounded-xl overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-2xl" data-name="milaron pro ii" data-tier="standard" data-catalog-id="pro2">
+          <div class="aspect-[4/3] bg-[#f3f3f4] flex items-center justify-center p-10 relative overflow-hidden">
+            <img alt="Milaron Pro II" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHWGq5ko_AoRz_FRHURv0itQCBNMLuMRAgEXv71zsxAW9X51KFruI0F1aESBKDX55ttcJYg1kFPUqvEYNxqB_bS6Ow0BxYIM9JlaVrZjisJYvP2vwrk5ywFyctJDjooJmwa0xM8br1ljeAk6AeKWSzyAjaWzmwvRuijii5N30m7vNNINtXSw1dpOPDdmOk8ghgJYy-mPGpx_tC1gS2AE_LSDpAkKzajLTWQRKXzDJm0FHT51TlF-Akf0ZPQlLpc0VmwQJa2LyTezfX">
+          </div>
+          <div class="p-6 flex flex-col flex-1 gap-3">
+            <div class="flex justify-between items-start">
+              <h3 class="font-manrope font-semibold text-xl">Milaron Pro II</h3>
+              <span class="text-[9px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-2 py-1 rounded">PRO</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 py-3">
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">2380mm</p></div>
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">680mm</p></div>
+              <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">320mm</p></div>
+            </div>
+            <button class="mt-auto w-full border border-black/10 text-black text-[10px] font-bold tracking-widest uppercase py-4 rounded-lg hover:bg-black hover:text-white transition-all" onclick="openSpec('pro2','Milaron Pro II','PRO','2380mm','680mm','320mm','Steel / Oak','170 KG','5-Spring Config','Premium Leather','3,950')">View Technical Specs</button>
+          </div>
+        </div>
+
+        <!-- Add Custom -->
+        <div id="custom-grid-placeholder" class="equipment-card bg-white border-2 border-dashed border-[#cfc4c5]/50 rounded-xl flex flex-col items-center justify-center p-16 group cursor-pointer hover:border-black/30 hover:bg-black/[0.02] transition-all duration-300" data-name="custom" data-tier="custom" onclick="openCustomModal()">
+          <div class="w-20 h-20 rounded-full border border-black/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-black group-hover:text-white transition-all duration-500">
+            <span class="material-symbols-outlined text-3xl">add</span>
+          </div>
+          <h4 class="font-manrope font-semibold text-xl text-center">Create Custom Equipment</h4>
+          <p class="text-sm text-center text-neutral-400 mt-2 px-4">Can't find your model? Define custom dimensions.</p>
+        </div>
+
+      </div>
+    </div>
+    <!-- Spec Drawer -->
+    <div id="spec-panel" class="spec-panel flex-shrink-0 bg-white border-l border-neutral-100 flex flex-col">
+      <div class="p-6 border-b border-neutral-100 flex items-center justify-between h-20 flex-shrink-0">
+        <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">Detail / <span id="spec-name">—</span></span>
+        <button class="material-symbols-outlined text-neutral-400 hover:text-black transition-colors" onclick="closeSpec()">close</button>
+      </div>
+      <div class="flex-1 overflow-y-auto no-scrollbar p-6 space-y-8">
+        <div class="aspect-video bg-neutral-50 rounded-xl overflow-hidden border border-black/5 flex items-center justify-center relative">
+          <div class="absolute inset-0" style="background-image:radial-gradient(#000 1px,transparent 1px);background-size:24px 24px;opacity:0.06;"></div>
+          <img class="w-3/4 object-contain relative z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQXkQqrWXGQSqL_0Z8GFqs7tlCzDm7pA94Muxw_0UIef8P7slMSrHlfQiOIGSbYPDBpB1ikM7hRhACpQYU4Ml-NLnVGhGeSmxI4jVu1YVwEdVekkjheQir-4n5c7R7Db-LBkXoBEhX9PCnwEqkYZLGfzxfIzmWTZTfCFtLzRdXUfAMmvUi43-6JBz44d86KA449TSFGTEDvYEjuxVd3IVuUHdNzePMp0XxSG2wF3VXNVZk-Rb19GXstksEseu38GgCjoL73U5KFohz" alt="Spec diagram">
+          <div class="absolute bottom-3 right-3 bg-white/90 px-2 py-1 rounded border border-black/5"><span class="font-mono text-[9px] uppercase tracking-widest">DIAGRAM_04_A</span></div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="w-1.5 h-1.5 bg-[#705d00] rounded-full"></span>
+            <h3 class="font-manrope font-semibold text-lg">Product Specifications</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-neutral-50"><span class="text-[10px] font-bold tracking-wider uppercase text-neutral-400">Frame Material</span><span class="text-sm font-semibold" id="spec-frame">—</span></div>
+            <div class="flex justify-between items-center pb-3 border-b border-neutral-50"><span class="text-[10px] font-bold tracking-wider uppercase text-neutral-400">Weight Limit</span><span class="font-mono font-bold" id="spec-weight">—</span></div>
+            <div class="flex justify-between items-center pb-3 border-b border-neutral-50"><span class="text-[10px] font-bold tracking-wider uppercase text-neutral-400">Spring Tension</span><span class="text-sm font-semibold" id="spec-spring">—</span></div>
+            <div class="flex justify-between items-center pb-3 border-b border-neutral-50"><span class="text-[10px] font-bold tracking-wider uppercase text-neutral-400">Upholstery</span><span class="text-sm font-semibold" id="spec-upholstery">—</span></div>
+            <div class="flex justify-between items-center pb-3 border-b border-neutral-50"><span class="text-[10px] font-bold tracking-wider uppercase text-neutral-400">Unit Price</span><span class="font-mono font-bold text-[#705d00]" id="spec-price">—</span></div>
+          </div>
+          <div class="mt-6 p-4 bg-stone-50 rounded-xl border border-black/5">
+            <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Architectural Notes</p>
+            <p class="text-sm italic text-neutral-500 leading-relaxed">Requires a minimum clearance of 600mm on all sides for safety compliance. Integrated caster system allows for easy studio reconfiguration.</p>
+          </div>
+        </div>
+      </div>
+      <div class="p-6 border-t border-neutral-100 flex-shrink-0">
+        <button class="w-full bg-black text-white text-[10px] font-bold tracking-widest uppercase py-5 rounded-xl flex items-center justify-center gap-3 hover:bg-zinc-800 active:scale-[0.98] transition-all" onclick="addToPlanner()">
+          <span class="material-symbols-outlined text-lg">add_circle</span> ADD TO PLANNER
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================
+     PAGE: STUDIO PLANNER
+     =========================== -->
+<div id="page-planner" class="page">
+  <header class="flex-shrink-0 flex items-center gap-3 px-8 h-14 bg-[#EEF1F4]/80 backdrop-blur-md border-b border-black/5">
+    <span class="font-manrope font-bold text-base tracking-tighter flex-shrink-0">Studio Planner</span>
+    <div class="w-px h-5 bg-black/10 flex-shrink-0"></div>
+    <button class="text-[11px] font-bold tracking-widest uppercase text-neutral-500 hover:text-black transition-colors flex-shrink-0 flex items-center gap-1" onclick="openAddModal()">
+      <span class="material-symbols-outlined text-sm">add_circle</span> Add Reformer
+    </button>
+    <button class="text-[11px] font-bold tracking-widest uppercase text-neutral-500 hover:text-black transition-colors flex-shrink-0 flex items-center gap-1" onclick="openArrangeModal()">
+      <span class="material-symbols-outlined text-sm">auto_fix_high</span> Auto-Arrange
+    </button>
+    <button class="text-[11px] font-bold tracking-widest uppercase text-neutral-500 hover:text-red-500 transition-colors flex-shrink-0" onclick="clearCanvas()">Clear All</button>
+    <div class="w-px h-5 bg-black/10 flex-shrink-0"></div>
+    <!-- Room dimensions -->
+    <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-400 flex-shrink-0">Room</span>
+    <input id="room-w-input" type="number" value="12" min="1" max="100" step="0.5" class="w-14 text-center font-mono border border-black/10 py-1 px-1 rounded text-xs focus:outline-none focus:border-black" onchange="updateRoomDimensions()">
+    <span class="text-[10px] text-neutral-400 flex-shrink-0">×</span>
+    <input id="room-h-input" type="number" value="8" min="1" max="100" step="0.5" class="w-14 text-center font-mono border border-black/10 py-1 px-1 rounded text-xs focus:outline-none focus:border-black" onchange="updateRoomDimensions()">
+    <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-400 flex-shrink-0">m</span>
+    <div class="ml-auto flex items-center gap-3 flex-shrink-0">
+      <span class="text-[11px] font-bold tracking-widest uppercase text-neutral-400">Rooms: <span id="planner-room-count">1</span></span>
+      <button class="text-[11px] font-bold tracking-widest uppercase text-neutral-500 hover:text-black">Save Draft</button>
+      <button class="text-[11px] font-bold tracking-widest uppercase bg-black text-white px-5 py-2 rounded-lg hover:bg-zinc-800 transition-colors">Export Plan</button>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Canvas Area -->
+    <div class="flex-1 bg-[#F8F9FA] flex items-center justify-center relative overflow-hidden">
+      <!-- Canvas wrapper with rulers -->
+      <div class="relative" style="width:720px;height:480px;">
+        <!-- Top ruler -->
+        <div class="absolute -top-9 left-0 right-0 flex items-center">
+          <div class="w-full h-px bg-zinc-200 relative">
+            <div class="absolute inset-y-[-4px] left-0 w-px bg-zinc-300"></div>
+            <div class="absolute inset-y-[-4px] right-0 w-px bg-zinc-300"></div>
+            <span id="ruler-w" class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-zinc-400 tracking-widest uppercase">12.00 m</span>
+          </div>
+        </div>
+        <!-- Left ruler -->
+        <div class="absolute -left-9 top-0 bottom-0 flex items-center">
+          <div class="h-full w-px bg-zinc-200 relative">
+            <div class="absolute inset-x-[-4px] top-0 h-px bg-zinc-300"></div>
+            <div class="absolute inset-x-[-4px] bottom-0 h-px bg-zinc-300"></div>
+            <span id="ruler-h" class="absolute left-[-44px] top-1/2 -translate-y-1/2 text-[10px] font-mono text-zinc-400 -rotate-90 tracking-widest uppercase whitespace-nowrap">8.00 m</span>
+          </div>
+        </div>
+        <!-- Canvas -->
+        <div id="planner-canvas" class="w-full h-full bg-white border border-black/5 shadow-sm relative overflow-hidden select-none">
+          <div class="dot-grid absolute inset-0"></div>
+        </div>
+      </div>
+
+      <!-- Bottom stats bar -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-2xl border border-white/60 rounded-2xl shadow-lg h-16 flex items-center px-8 gap-8">
+        <div>
+          <p class="text-[9px] font-bold tracking-widest uppercase text-zinc-400 mb-0.5">QTY Reformers</p>
+          <span class="text-lg font-manrope font-bold text-black" id="planner-qty">0</span>
+        </div>
+        <div class="w-px h-6 bg-black/5"></div>
+        <div>
+          <p class="text-[9px] font-bold tracking-widest uppercase text-zinc-400 mb-0.5">Area Used</p>
+          <span class="text-lg font-manrope font-bold text-black" id="planner-area">0%</span>
+        </div>
+        <div class="w-px h-6 bg-black/5"></div>
+        <div>
+          <p class="text-[9px] font-bold tracking-widest uppercase text-zinc-400 mb-0.5">Safety Buffers</p>
+          <button id="safety-btn" class="w-9 h-5 bg-black rounded-full relative flex items-center p-1 mt-0.5 transition-colors" onclick="toggleSafety()">
+            <div id="safety-knob" class="w-3 h-3 bg-white rounded-full shadow-sm transition-all ml-auto"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Zoom controls -->
+      <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+        <button class="w-10 h-10 bg-white border border-black/5 rounded-lg flex items-center justify-center hover:bg-black hover:text-white transition-colors shadow-sm" onclick="zoomCanvas(1.15)"><span class="material-symbols-outlined text-lg">add</span></button>
+        <button class="w-10 h-10 bg-white border border-black/5 rounded-lg flex items-center justify-center hover:bg-black hover:text-white transition-colors shadow-sm" onclick="zoomCanvas(0.87)"><span class="material-symbols-outlined text-lg">remove</span></button>
+        <div class="h-3"></div>
+        <button class="w-10 h-10 bg-white border border-black/5 rounded-lg flex items-center justify-center hover:bg-black hover:text-white transition-colors shadow-sm" onclick="resetZoom()"><span class="material-symbols-outlined text-lg">fit_screen</span></button>
+      </div>
+    </div>
+
+    <!-- Planner Profit Panel -->
+    <div class="planner-panel bg-white border-l border-neutral-100 flex flex-col overflow-y-auto no-scrollbar flex-shrink-0">
+      <div class="px-5 py-4 border-b border-neutral-100 flex-shrink-0">
+        <p class="text-[10px] font-bold tracking-[0.25em] uppercase text-neutral-400">Planner Analysis</p>
+      </div>
+      <div class="flex-1 px-5 py-4 space-y-5">
+        <!-- Income -->
+        <div>
+          <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 pb-2 mb-3">Income</p>
+          <div class="space-y-3">
+            <div>
+              <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">Income / Reformer / Class</label>
+              <div class="relative">
+                <span class="absolute left-2.5 top-2 text-neutral-400 text-xs font-mono">$</span>
+                <input id="pl-ipr" type="number" value="50" min="0" class="w-full font-mono border border-black/10 pl-6 pr-2 py-2 rounded-lg focus:outline-none focus:border-black text-sm" oninput="syncProfitFromPlanner();plannerRecalc()">
+              </div>
+            </div>
+            <div>
+              <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">QTY Reformers <span class="text-[8px] normal-case tracking-normal font-normal">(auto)</span></label>
+              <input id="pl-nr" type="number" disabled value="0" class="w-full font-mono border border-black/10 px-3 py-2 rounded-lg text-sm bg-neutral-50 text-neutral-400 cursor-not-allowed">
+            </div>
+            <div>
+              <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">Classes per Week</label>
+              <input id="pl-cpw" type="number" value="14" min="0" class="w-full font-mono border border-black/10 px-3 py-2 rounded-lg focus:outline-none focus:border-black text-sm" oninput="syncProfitFromPlanner();plannerRecalc()">
+            </div>
+          </div>
+        </div>
+        <!-- Overhead -->
+        <div>
+          <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 pb-2 mb-3">Monthly Overhead</p>
+          <div class="space-y-3">
+            <div>
+              <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">Rent & Utilities</label>
+              <div class="relative"><span class="absolute left-2.5 top-2 text-neutral-400 text-xs font-mono">$</span>
+              <input id="pl-rent" type="number" value="6500" min="0" class="w-full font-mono border border-black/10 pl-6 pr-2 py-2 rounded-lg focus:outline-none focus:border-black text-sm" oninput="syncProfitFromPlanner();plannerRecalc()"></div>
+            </div>
+            <div>
+              <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">Staff & Instructors</label>
+              <div class="relative"><span class="absolute left-2.5 top-2 text-neutral-400 text-xs font-mono">$</span>
+              <input id="pl-staff" type="number" value="8200" min="0" class="w-full font-mono border border-black/10 pl-6 pr-2 py-2 rounded-lg focus:outline-none focus:border-black text-sm" oninput="syncProfitFromPlanner();plannerRecalc()"></div>
+            </div>
+            <div>
+              <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">Other</label>
+              <div class="relative"><span class="absolute left-2.5 top-2 text-neutral-400 text-xs font-mono">$</span>
+              <input id="pl-other" type="number" value="1500" min="0" class="w-full font-mono border border-black/10 pl-6 pr-2 py-2 rounded-lg focus:outline-none focus:border-black text-sm" oninput="syncProfitFromPlanner();plannerRecalc()"></div>
+            </div>
+          </div>
+        </div>
+        <!-- CapEx -->
+        <div>
+          <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 pb-2 mb-3">Capital Expenditure</p>
+          <div>
+            <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-1.5">Upfront Cost / Reformer</label>
+            <div class="relative"><span class="absolute left-2.5 top-2 text-neutral-400 text-xs font-mono">$</span>
+            <input id="pl-cpr" type="number" value="4850" min="0" class="w-full font-mono border border-black/10 pl-6 pr-2 py-2 rounded-lg focus:outline-none focus:border-black text-sm" oninput="syncProfitFromPlanner();plannerRecalc()"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Results -->
+      <div class="px-5 py-4 border-t border-neutral-100 space-y-2.5 flex-shrink-0 bg-neutral-50/60">
+        <div class="flex justify-between items-center">
+          <span class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Monthly Revenue</span>
+          <span class="font-mono font-bold text-sm text-[#705d00]" id="pl-out-rev">$0</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Monthly Net</span>
+          <span class="font-mono font-bold text-sm" id="pl-out-net">$0</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Total CapEx</span>
+          <span class="font-mono text-sm text-neutral-500" id="pl-out-cap">$0</span>
+        </div>
+        <button class="mt-1 w-full bg-black text-white text-[9px] font-bold tracking-widest uppercase py-3 rounded-lg hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2" onclick="navigate('profit')">
+          <span class="material-symbols-outlined text-sm">insights</span> Full Analytics
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================
+     PAGE: PROFIT ANALYSIS
+     =========================== -->
+<div id="page-profit" class="page">
+  <header class="flex-shrink-0 flex justify-between items-center px-16 h-20 bg-[#EEF1F4]/90 backdrop-blur-md border-b border-black/5">
+    <h1 class="font-manrope font-semibold text-2xl">Profit Analysis</h1>
+    <div class="flex items-center gap-3">
+      <button class="px-5 py-2 border border-black text-black text-[11px] font-bold tracking-widest uppercase hover:bg-black/5 rounded-lg transition-colors">Import Data</button>
+      <button class="px-5 py-2 bg-black text-white text-[11px] font-bold tracking-widest uppercase rounded-lg hover:bg-zinc-800 transition-colors" onclick="exportData()">Export Data</button>
+    </div>
+  </header>
+  <main class="flex-1 overflow-y-auto no-scrollbar px-16 pb-20">
+    <div class="py-12 flex flex-col md:flex-row justify-between items-end gap-6">
+      <div>
+        <h2 class="font-manrope font-bold text-5xl text-black leading-tight">Financial Performance<br>Modeling</h2>
+        <p class="text-base text-neutral-500 mt-3">Architecting studio profitability through precision forecasting.</p>
+      </div>
+      <div class="bg-[#eeeeee] p-1 rounded-lg flex gap-1 flex-shrink-0" id="tf-group">
+        <button class="tf-btn" onclick="setTF('daily')">Daily</button>
+        <button class="tf-btn" onclick="setTF('weekly')">Weekly</button>
+        <button class="tf-btn active" onclick="setTF('monthly')">Monthly</button>
+        <button class="tf-btn" onclick="setTF('annual')">Annual</button>
+      </div>
+    </div>
+    <!-- Metrics Row -->
+    <div class="grid grid-cols-4 gap-6 mb-12">
+      <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+        <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-4">Total Revenue</p>
+        <div class="flex items-baseline gap-1"><span class="font-manrope font-semibold text-3xl text-black">$</span><span class="font-manrope font-semibold text-3xl text-[#705d00]" id="m-revenue">0</span></div>
+        <div class="flex items-center gap-1 mt-2 text-xs font-bold text-green-600"><span class="material-symbols-outlined text-sm">trending_up</span><span id="m-revenue-label">PER MONTH</span></div>
+      </div>
+      <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+        <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-4">Total Costs</p>
+        <div class="flex items-baseline gap-1"><span class="font-manrope font-semibold text-3xl text-black">$</span><span class="font-manrope font-semibold text-3xl text-black" id="m-costs">0</span></div>
+        <div class="flex items-center gap-1 mt-2 text-xs font-bold text-neutral-400"><span class="material-symbols-outlined text-sm">horizontal_rule</span> STABLE MARGINS</div>
+      </div>
+      <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+        <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-4">Net Profit</p>
+        <div class="flex items-baseline gap-1"><span class="font-manrope font-semibold text-3xl text-black">$</span><span class="font-manrope font-semibold text-3xl text-[#705d00]" id="m-profit">0</span></div>
+        <div class="flex items-center gap-1 mt-2 text-xs font-bold text-green-600"><span class="material-symbols-outlined text-sm">trending_up</span><span id="m-margin">0% MARGIN</span></div>
+      </div>
+      <div class="bg-white p-6 border border-black/5 rounded-xl shadow-sm">
+        <p class="text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-4">ROI Timeline</p>
+        <div class="flex items-baseline gap-2"><span class="font-manrope font-semibold text-3xl text-black" id="m-roi">—</span><span class="text-lg text-neutral-400">MONTHS</span></div>
+        <div class="flex items-center gap-1 mt-2 text-xs font-bold text-[#705d00]"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">star</span> OPTIMIZED PATH</div>
+      </div>
+    </div>
+    <!-- Main Grid -->
+    <div class="grid grid-cols-12 gap-12">
+      <!-- Calculator -->
+      <div class="col-span-4">
+        <div class="bg-white border border-black/5 rounded-xl p-6 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-16 h-16 bg-[#705d00]/5 rotate-45 translate-x-8 -translate-y-8"></div>
+          <h3 class="font-manrope font-semibold text-2xl text-black mb-6 flex items-center gap-2"><span class="material-symbols-outlined">calculate</span> Studio Parameters</h3>
+          <!-- Income -->
+          <div class="mb-6">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 pb-2 mb-4">Income</p>
+            <div class="space-y-4">
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Income per Reformer / Class</label>
+                <div class="relative"><input id="inp-ipr" type="number" value="50" min="0" step="5" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black pr-14 text-sm"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs font-mono">USD</span></div>
+              </div>
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">QTY of Reformers</label>
+                <input id="inp-nr" type="number" value="12" min="1" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm">
+              </div>
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Classes per Week</label>
+                <input id="inp-cpw" type="number" value="14" min="0" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm">
+              </div>
+            </div>
+          </div>
+          <!-- Costs -->
+          <div class="mb-6">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 pb-2 mb-4">Monthly Overhead</p>
+            <div class="space-y-4">
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Rent & Utilities</label>
+                <div class="relative"><input id="inp-rent" type="number" value="6500" min="0" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black pr-14 text-sm"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs font-mono">USD</span></div>
+              </div>
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Staff & Instructors</label>
+                <div class="relative"><input id="inp-staff" type="number" value="8200" min="0" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black pr-14 text-sm"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs font-mono">USD</span></div>
+              </div>
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Other Monthly Costs</label>
+                <div class="relative"><input id="inp-other" type="number" value="1500" min="0" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black pr-14 text-sm"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs font-mono">USD</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Capital -->
+          <div class="mb-6">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 pb-2 mb-4">Capital Expenditure</p>
+            <div class="space-y-4">
+              <div>
+                <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Upfront Cost per Reformer</label>
+                <div class="relative"><input id="inp-cpr" type="number" value="4850" min="0" oninput="recalc()" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black pr-14 text-sm"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs font-mono">USD</span></div>
+              </div>
+              <div class="bg-[#f3f3f4] rounded-lg p-3 flex justify-between items-center">
+                <span class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Total Capital</span>
+                <span class="font-mono font-bold text-sm" id="m-capital">$0</span>
+              </div>
+            </div>
+          </div>
+          <button class="w-full bg-black text-white py-4 rounded-lg text-[11px] font-bold tracking-widest uppercase hover:bg-zinc-800 transition-colors" onclick="recalc()">Update Projections</button>
+        </div>
+      </div>
+      <!-- Charts + Table -->
+      <div class="col-span-8 space-y-6">
+        <div class="bg-white border border-black/5 rounded-xl p-6 shadow-sm">
+          <div class="flex justify-between items-center mb-8">
+            <h3 class="font-manrope font-semibold text-2xl">Break-Even Analysis</h3>
+            <div class="flex gap-5">
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#705d00]"></span><span class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Cumul. Revenue</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-neutral-200"></span><span class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Total Costs</span></div>
+            </div>
+          </div>
+          <div class="relative" style="height:300px;">
+            <div class="absolute left-0 top-0 bottom-8 w-14 flex flex-col justify-between text-right pr-2" id="y-labels"></div>
+            <div class="absolute left-14 right-0 top-0 bottom-8 border-l border-b border-black/8">
+              <svg id="be-chart" class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 280"></svg>
+              <div id="be-label" class="absolute bg-black text-white px-3 py-2 rounded-lg text-xs font-bold tracking-widest uppercase shadow-lg pointer-events-none" style="display:none;"></div>
+            </div>
+            <div class="absolute left-14 right-0 bottom-0 flex justify-between">
+              <span class="text-[9px] font-mono text-neutral-400">M0</span><span class="text-[9px] font-mono text-neutral-400">M3</span><span class="text-[9px] font-mono text-neutral-400">M6</span><span class="text-[9px] font-mono text-neutral-400">M9</span><span class="text-[9px] font-mono text-neutral-400">M12</span><span class="text-[9px] font-mono text-neutral-400">M15</span><span class="text-[9px] font-mono text-neutral-400">M18</span><span class="text-[9px] font-mono text-neutral-400">M21</span><span class="text-[9px] font-mono text-neutral-400">M24</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-black/5 rounded-xl overflow-hidden shadow-sm">
+          <div class="px-6 py-4 border-b border-black/5 bg-zinc-50/50"><h4 class="text-[11px] font-bold tracking-widest uppercase text-black">Monthly Cash Flow Breakdown</h4></div>
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="px-6 py-3 text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5">Month</th>
+                <th class="px-6 py-3 text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5">Revenue</th>
+                <th class="px-6 py-3 text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5">Expenses</th>
+                <th class="px-6 py-3 text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5">Net Position</th>
+                <th class="px-6 py-3 text-[10px] font-bold tracking-widest uppercase text-neutral-400 border-b border-black/5 text-right">Cumul. Balance</th>
+              </tr>
+            </thead>
+            <tbody id="cf-table" class="font-mono text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</div><!-- /main wrapper -->
+
+<!-- ========== MODAL: ADD REFORMER ========== -->
+<div id="modal-add-reformer" class="modal">
+  <div class="modal-bg" onclick="closeAddModal()"></div>
+  <div class="modal-box w-[700px] max-h-[85vh] overflow-y-auto no-scrollbar">
+    <div class="px-8 pt-8 pb-6 border-b border-neutral-100 flex items-center justify-between">
+      <div>
+        <h2 class="font-manrope font-bold text-2xl">Select Reformer</h2>
+        <p class="text-sm text-neutral-400 mt-1">Choose a model to place on the canvas</p>
+      </div>
+      <button class="material-symbols-outlined text-neutral-400 hover:text-black transition-colors" onclick="closeAddModal()">close</button>
+    </div>
+    <!-- Orientation -->
+    <div class="px-8 py-4 border-b border-neutral-100 flex items-center gap-4">
+      <span class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Orientation:</span>
+      <button class="orient-btn active" id="orient-h" onclick="setAddOrientation('h')">Long Ways</button>
+      <button class="orient-btn" id="orient-v" onclick="setAddOrientation('v')">Short Ways</button>
+    </div>
+    <!-- Catalog Grid -->
+    <div class="p-8 grid grid-cols-2 gap-4" id="modal-catalog-grid"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL: CUSTOM EQUIPMENT ========== -->
+<div id="modal-custom" class="modal">
+  <div class="modal-bg" onclick="closeCustomModal()"></div>
+  <div class="modal-box w-[480px]">
+    <div class="px-8 pt-8 pb-6 border-b border-neutral-100 flex items-center justify-between">
+      <div>
+        <h2 class="font-manrope font-bold text-2xl">Create Custom Equipment</h2>
+        <p class="text-sm text-neutral-400 mt-1">Define your reformer dimensions</p>
+      </div>
+      <button class="material-symbols-outlined text-neutral-400 hover:text-black" onclick="closeCustomModal()">close</button>
+    </div>
+    <div class="px-8 py-6 space-y-4">
+      <div>
+        <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Equipment Name</label>
+        <input id="custom-name" type="text" placeholder="e.g. Custom Studio Pro" class="w-full border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm">
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Length (mm)</label>
+          <input id="custom-length" type="number" value="2400" min="500" max="5000" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Width (mm)</label>
+          <input id="custom-width" type="number" value="690" min="200" max="2000" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Height (mm)</label>
+          <input id="custom-height" type="number" value="350" min="100" max="1500" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Unit Price ($)</label>
+        <div class="relative"><span class="absolute left-3 top-3.5 text-neutral-400 text-sm">$</span>
+        <input id="custom-price" type="number" value="3500" min="0" class="w-full font-mono border border-black/10 p-3 pl-7 rounded-lg focus:outline-none focus:border-black text-sm"></div>
+      </div>
+    </div>
+    <div class="px-8 pb-8 flex gap-3">
+      <button class="flex-1 border border-black/10 text-black text-[11px] font-bold tracking-widest uppercase py-4 rounded-xl hover:bg-black/5 transition-colors" onclick="closeCustomModal()">Cancel</button>
+      <button class="flex-1 bg-black text-white text-[11px] font-bold tracking-widest uppercase py-4 rounded-xl hover:bg-zinc-800 transition-colors" onclick="createCustomEquipment()">Create Equipment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: AUTO-ARRANGE ========== -->
+<div id="modal-arrange" class="modal">
+  <div class="modal-bg" onclick="closeArrangeModal()"></div>
+  <div class="modal-box w-[420px]">
+    <div class="px-8 pt-8 pb-6 border-b border-neutral-100 flex items-center justify-between">
+      <div>
+        <h2 class="font-manrope font-bold text-2xl">Auto-Arrange</h2>
+        <p class="text-sm text-neutral-400 mt-1">Organise all reformers on canvas</p>
+      </div>
+      <button class="material-symbols-outlined text-neutral-400 hover:text-black" onclick="closeArrangeModal()">close</button>
+    </div>
+    <div class="px-8 py-6 space-y-5">
+      <div>
+        <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-3">Layout Direction</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button id="arr-h-btn" class="border-2 border-black rounded-xl p-4 flex flex-col items-center gap-2 transition-all" onclick="setArrDir('h')">
+            <div class="flex flex-col gap-1 w-full">
+              <div class="w-full h-4 bg-black rounded-sm"></div>
+              <div class="w-full h-4 bg-black rounded-sm"></div>
+              <div class="w-3/4 h-4 bg-black rounded-sm"></div>
+            </div>
+            <span class="text-[10px] font-bold tracking-widest uppercase">Long Ways</span>
+            <span class="text-[9px] text-neutral-400">Length runs horizontal</span>
+          </button>
+          <button id="arr-v-btn" class="border border-black/10 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:border-black/30" onclick="setArrDir('v')">
+            <div class="flex flex-row gap-1 w-full justify-center">
+              <div class="w-4 h-12 bg-neutral-300 rounded-sm"></div>
+              <div class="w-4 h-12 bg-neutral-300 rounded-sm"></div>
+              <div class="w-4 h-12 bg-neutral-300 rounded-sm"></div>
+            </div>
+            <span class="text-[10px] font-bold tracking-widest uppercase text-neutral-500">Short Ways</span>
+            <span class="text-[9px] text-neutral-400">Length runs vertical</span>
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Side-by-Side Gap</label>
+          <div class="relative"><input id="arr-gap-side" type="number" value="600" min="0" max="3000" step="100" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm pr-12"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs">mm</span></div>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Up-Down Gap</label>
+          <div class="relative"><input id="arr-gap-ud" type="number" value="800" min="0" max="3000" step="100" class="w-full font-mono border border-black/10 p-3 rounded-lg focus:outline-none focus:border-black text-sm pr-12"><span class="absolute right-3 top-3.5 text-neutral-400 text-xs">mm</span></div>
+        </div>
+      </div>
+      <div class="bg-neutral-50 rounded-xl p-4 text-[11px] text-neutral-500">
+        <span class="font-bold text-neutral-700" id="arr-preview-text">Arrange 0 reformers</span> will be placed in a grid within your <span id="arr-room-text">12×8m</span> studio.
+      </div>
+    </div>
+    <div class="px-8 pb-8 flex gap-3">
+      <button class="flex-1 border border-black/10 text-black text-[11px] font-bold tracking-widest uppercase py-4 rounded-xl hover:bg-black/5 transition-colors" onclick="closeArrangeModal()">Cancel</button>
+      <button class="flex-1 bg-black text-white text-[11px] font-bold tracking-widest uppercase py-4 rounded-xl hover:bg-zinc-800 transition-colors" onclick="autoArrange()">Arrange Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+// ============================================================
+// CANVAS CONSTANTS
+// ============================================================
+const CANVAS_W = 720;
+const CANVAS_H = 480;
+
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+const S = {
+  page: 'dashboard',
+  tf: 'monthly',
+  safety: true,
+  equipment: [],
+  reformerCount: 0,
+  roomWidth: 12000,   // mm
+  roomHeight: 8000,   // mm
+  customCounter: 0,
+  addOrientation: 'h',  // for add modal
+  arrDir: 'h',          // for arrange modal
+  catalog: [
+    { id:'studio', name:'Milaron Studio',  tier:'STANDARD', length:2400, width:690,  height:350, price:3200,
+      img:'https://lh3.googleusercontent.com/aida-public/AB6AXuC_M-BkZvsTv7ItaOUn5RRT8HaVwPqK1k8r5nm9ltti2AWafOKqnbCKyKhc2jaB8wgvxQVB1LhCY_lxVTqgI8FdYN0x4GOgHiXx7DK2-F3tzrZfjeurCX3DRgQmrjzaXAXhZ-YyuU89pQ6rZ1djNXmyYBebUHDjRazTeoUvRdMC4_HQzxCQNP5UGszLczw-B0Js0iHzDGIOori50-mPl-l7UusRaqSLMJlWIUMf8x6EY7GCe32UFIngcZfn0UXvKAnSCJUE4toq8BOy' },
+    { id:'elite',  name:'Milaron Elite',   tier:'PREMIUM',  length:2450, width:720,  height:400, price:4850,
+      img:'https://lh3.googleusercontent.com/aida-public/AB6AXuB8L5UvjDTqwdJ_tGz3cMMGRqnivMfbl9OShzdLqsB73k6e1Rgw6bbYtoLY0bg6ZnK3MiKmiQMd0eQzE1faE52bts2iuWVE6-9ApSo1JwQHgv6yU3wbliFxoUt_X8wqluHnbmDiBeikHu-ocv3UJRhe4yFgJxBRMMYWl4mNX1mWFMYuChGBMjzYgxZOa8Bgj_gtaBL-gQPvnIU7sH8XTwEYXsLgpEVd4C83hRYZ34IB45gQ62UvnWgCw6xY_4-4qY9POWvpNl2vUVLv' },
+    { id:'pro2',   name:'Milaron Pro II',  tier:'PRO',      length:2380, width:680,  height:320, price:3950,
+      img:'https://lh3.googleusercontent.com/aida-public/AB6AXuDHWGq5ko_AoRz_FRHURv0itQCBNMLuMRAgEXv71zsxAW9X51KFruI0F1aESBKDX55ttcJYg1kFPUqvEYNxqB_bS6Ow0BxYIM9JlaVrZjisJYvP2vwrk5ywFyctJDjooJmwa0xM8br1ljeAk6AeKWSzyAjaWzmwvRuijii5N30m7vNNINtXSw1dpOPDdmOk8ghgJYy-mPGpx_tC1gS2AE_LSDpAkKzajLTWQRKXzDJm0FHT51TlF-Akf0ZPQlLpc0VmwQJa2LyTezfX' }
+  ],
+  profit: {
+    ipr:   50,    // income per reformer per class
+    cpw:   14,    // classes per week
+    rent:  6500,
+    staff: 8200,
+    other: 1500,
+    cpr:   4850,  // cost per reformer
+    nr:    12     // qty (standalone page only, editable)
+  },
+  specCatalogId: null
+};
+
+// ============================================================
+// SCALE HELPERS
+// ============================================================
+function scX() { return CANVAS_W / S.roomWidth; }
+function scY() { return CANVAS_H / S.roomHeight; }
+
+function getItemDimsMm(cat, orientation) {
+  if (orientation === 'v') return { w: cat.width, h: cat.length };
+  return { w: cat.length, h: cat.width };
+}
+
+function getCatalogItem(id) {
+  return S.catalog.find(c => c.id === id);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  const nl = document.querySelector(`.nav-link[data-page="${page}"]`);
+  if (nl) nl.classList.add('active');
+  S.page = page;
+  if (page === 'profit') { syncProfitInputsFromState(); recalc(); }
+  if (page === 'dashboard') updateDash();
+  if (page === 'planner') { plannerRecalc(); }
+}
+document.querySelectorAll('.nav-link[data-page]').forEach(el => {
+  el.addEventListener('click', () => navigate(el.dataset.page));
+});
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function fmt(n) { return Math.round(Math.abs(n)).toLocaleString('en-US'); }
+function fmtK(n) {
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '$' + Math.round(n/1e3) + 'k';
+  return '$' + Math.round(n);
+}
+function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// PROFIT STATE SYNC
+// ============================================================
+function syncProfitFromPlanner() {
+  const p = S.profit;
+  p.ipr   = parseFloat(document.getElementById('pl-ipr').value)   || 0;
+  p.cpw   = parseFloat(document.getElementById('pl-cpw').value)   || 0;
+  p.rent  = parseFloat(document.getElementById('pl-rent').value)  || 0;
+  p.staff = parseFloat(document.getElementById('pl-staff').value) || 0;
+  p.other = parseFloat(document.getElementById('pl-other').value) || 0;
+  p.cpr   = parseFloat(document.getElementById('pl-cpr').value)   || 0;
+}
+
+function syncProfitInputsFromState() {
+  const p = S.profit;
+  function sv(id, v) { const el = document.getElementById(id); if (el && !el.disabled) el.value = v; }
+  sv('inp-ipr',  p.ipr);
+  sv('inp-nr',   p.nr);
+  sv('inp-cpw',  p.cpw);
+  sv('inp-rent', p.rent);
+  sv('inp-staff',p.staff);
+  sv('inp-other',p.other);
+  sv('inp-cpr',  p.cpr);
+}
+
+function getValsStandalone() {
+  const p = S.profit;
+  p.ipr   = parseFloat(document.getElementById('inp-ipr').value)   || 0;
+  p.nr    = parseFloat(document.getElementById('inp-nr').value)    || 1;
+  p.cpw   = parseFloat(document.getElementById('inp-cpw').value)   || 0;
+  p.rent  = parseFloat(document.getElementById('inp-rent').value)  || 0;
+  p.staff = parseFloat(document.getElementById('inp-staff').value) || 0;
+  p.other = parseFloat(document.getElementById('inp-other').value) || 0;
+  p.cpr   = parseFloat(document.getElementById('inp-cpr').value)   || 0;
+  return p;
+}
+
+// ============================================================
+// STANDALONE PROFIT CALCULATOR
+// ============================================================
+function recalc() {
+  const p = getValsStandalone();
+  const mRev  = p.ipr * p.nr * p.cpw * 4.33;
+  const mCost = p.rent + p.staff + p.other;
+  const mNet  = mRev - mCost;
+  const capEx = p.cpr * p.nr;
+  const tfMul = { daily:1/30, weekly:7/30, monthly:1, annual:12 }[S.tf];
+  const roiMo = mNet > 0 ? Math.ceil(capEx / mNet) : Infinity;
+  const margin = mRev > 0 ? Math.round((mNet / mRev) * 100) : 0;
+  const tfLbl = { daily:'PER DAY', weekly:'PER WEEK', monthly:'PER MONTH', annual:'PER YEAR' }[S.tf];
+
+  setText('m-revenue', fmt(mRev * tfMul));
+  setText('m-costs',   fmt(mCost * tfMul));
+  setText('m-profit',  fmt(mNet * tfMul));
+  setText('m-margin',  margin + '% MARGIN');
+  setText('m-roi',     isFinite(roiMo) ? roiMo : '∞');
+  setText('m-capital', '$' + fmt(capEx));
+  setText('m-revenue-label', tfLbl);
+
+  drawChart(mRev, mCost, capEx, roiMo);
+  buildTable(mRev, mCost, capEx);
+  updateDash();
+}
+
+function setTF(tf) {
+  S.tf = tf;
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.tf-btn[onclick="setTF('${tf}')"]`)?.classList.add('active');
+  recalc();
+}
+
+// ============================================================
+// PLANNER PROFIT CALCULATOR
+// ============================================================
+function plannerRecalc() {
+  const p = S.profit;
+  const qty = S.equipment.length;
+  const mRev  = p.ipr * qty * p.cpw * 4.33;
+  const mCost = p.rent + p.staff + p.other;
+  const mNet  = mRev - mCost;
+  const capEx = p.cpr * qty;
+
+  setText('pl-nr', qty);
+  const plNrEl = document.getElementById('pl-nr');
+  if (plNrEl) plNrEl.value = qty;
+
+  setText('pl-out-rev', (mNet >= 0 ? '' : '') + '$' + fmt(mRev));
+  const netEl = document.getElementById('pl-out-net');
+  if (netEl) {
+    netEl.textContent = (mNet >= 0 ? '' : '-') + '$' + fmt(Math.abs(mNet));
+    netEl.style.color = mNet >= 0 ? '#705d00' : '#ef4444';
+  }
+  setText('pl-out-cap', '$' + fmt(capEx));
+
+  updatePlannerStats();
+  updateDash();
+}
+
+// ============================================================
+// BREAK-EVEN CHART
+// ============================================================
+function drawChart(mRev, mCost, capEx, roiMo) {
+  const svg = document.getElementById('be-chart');
+  if (!svg) return;
+  const MONTHS = 24, W = 1000, H = 280;
+  const maxRev  = mRev * MONTHS;
+  const maxCost = capEx + mCost * MONTHS;
+  const maxVal  = Math.max(maxRev, maxCost, 1);
+
+  function tx(m) { return (m / MONTHS) * W; }
+  function ty(v) { return H - (v / maxVal) * (H - 10); }
+
+  let revPts = '', costPts = '', revArea = '';
+  for (let m = 0; m <= MONTHS; m++) {
+    revPts  += tx(m) + ',' + ty(mRev * m) + ' ';
+    costPts += tx(m) + ',' + ty(capEx + mCost * m) + ' ';
+  }
+  revArea = revPts + `${tx(MONTHS)},${H} 0,${H}`;
+
+  let beCircle = '', beX = null, beY = null;
+  if (isFinite(roiMo) && roiMo <= MONTHS) {
+    beX = tx(roiMo); beY = ty(mRev * roiMo);
+    beCircle = `<circle cx="${beX}" cy="${beY}" r="7" fill="#000" stroke="#fff" stroke-width="2"/>`;
+  }
+  const grid = [0,1,2,3].map(i => {
+    const y = ty((maxVal/4) * (4-i));
+    return `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#f0f0f0" stroke-width="1"/>`;
+  }).join('');
+
+  svg.innerHTML = `
+    <defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fcd400" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#fcd400" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <polygon points="${revArea}" fill="url(#rg)"/>
+    <polyline points="${costPts}" fill="none" stroke="#e2e2e2" stroke-width="3" stroke-linecap="round"/>
+    <polyline points="${revPts}" fill="none" stroke="#fcd400" stroke-width="3" stroke-linecap="round"/>
+    ${beCircle}`;
+
+  const label = document.getElementById('be-label');
+  if (beX !== null && label) {
+    const container = svg.parentElement;
+    const cw = container.offsetWidth || 600, ch = container.offsetHeight || 280;
+    label.style.display = 'block';
+    label.style.left = Math.min((beX/W)*cw + 12, cw - 160) + 'px';
+    label.style.top  = Math.max((beY/H)*ch - 36, 4) + 'px';
+    label.textContent = `BREAK-EVEN: MONTH ${roiMo}`;
+  } else if (label) { label.style.display = 'none'; }
+
+  const yEl = document.getElementById('y-labels');
+  if (yEl) yEl.innerHTML = [4,3,2,1,0].map(i =>
+    `<span class="text-[9px] font-mono text-neutral-400">${fmtK((maxVal/4)*i)}</span>`).join('');
+}
+
+// ============================================================
+// CASH FLOW TABLE
+// ============================================================
+function buildTable(mRev, mCost, capEx) {
+  const MN = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const now = new Date(); let balance = -capEx; let html = '';
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - 1 + i, 1);
+    const lbl = MN[d.getMonth()] + ' ' + d.getFullYear() + (i > 0 ? ' (PROJ)' : '');
+    const rev = mRev * (i === 0 ? 1 : 1 + i * 0.015);
+    const net = rev - mCost; balance += net;
+    const nc = net >= 0 ? 'text-green-600' : 'text-red-500';
+    const bc = balance >= 0 ? 'text-green-700 font-bold' : 'text-red-500 font-bold';
+    html += `<tr class="hover:bg-zinc-50 transition-colors ${i>0?'border-t border-black/5':''}">
+      <td class="px-6 py-4 font-bold text-black">${lbl}</td>
+      <td class="px-6 py-4">$${fmt(rev)}</td>
+      <td class="px-6 py-4">$${fmt(mCost)}</td>
+      <td class="px-6 py-4 ${nc}">${net>=0?'+':'-'}$${fmt(Math.abs(net))}</td>
+      <td class="px-6 py-4 text-right ${bc}">${balance>=0?'+':'-'}$${fmt(Math.abs(balance))}</td></tr>`;
+  }
+  const tb = document.getElementById('cf-table'); if (tb) tb.innerHTML = html;
+}
+
+function exportData() {
+  const p = S.profit;
+  const mRev = p.ipr * p.nr * p.cpw * 4.33, mCost = p.rent+p.staff+p.other, net = mRev-mCost, cap = p.cpr*p.nr;
+  const roi = net > 0 ? Math.ceil(cap/net)+' months' : 'N/A';
+  const txt = ['Milaron Studio — Profit Analysis Export','=====================================',
+    `Income per Reformer/Class: $${p.ipr}`,`QTY Reformers:             ${p.nr}`,
+    `Classes per Week:          ${p.cpw}`,`Monthly Revenue:           $${fmt(mRev)}`,
+    `Monthly Overhead:          $${fmt(mCost)}`,`Net Monthly Profit:        $${fmt(net)}`,
+    `Profit Margin:             ${mRev>0?Math.round(net/mRev*100):0}%`,
+    `Capital Expenditure:       $${fmt(cap)}`,`ROI Timeline:              ${roi}`].join('\n');
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([txt],{type:'text/plain'})), download:'milaron-profit-analysis.txt'
+  });
+  a.click(); showToast('EXPORT COMPLETE');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDash() {
+  const p = S.profit;
+  const qty = S.equipment.length || p.nr;
+  const mRev = p.ipr * qty * p.cpw * 4.33;
+  const mNet = mRev - (p.rent + p.staff + p.other);
+  setText('dash-reformers', qty);
+  setText('dash-rooms', Math.ceil(qty / 12) || 1);
+  setText('dash-revenue', '$' + fmt(mRev));
+  setText('dash-profit', (mNet >= 0 ? '' : '-') + '$' + fmt(Math.abs(mNet)));
+  const dateEl = document.getElementById('dash-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ============================================================
+// STUDIO PLANNER — ROOM
+// ============================================================
+function updateRoomDimensions() {
+  const w = parseFloat(document.getElementById('room-w-input').value) || 12;
+  const h = parseFloat(document.getElementById('room-h-input').value) || 8;
+  S.roomWidth  = Math.max(1, w) * 1000;
+  S.roomHeight = Math.max(1, h) * 1000;
+  setText('ruler-w', w.toFixed(2) + ' m');
+  setText('ruler-h', h.toFixed(2) + ' m');
+  rerenderAllItems();
+}
+
+function rerenderAllItems() {
+  const canvas = document.getElementById('planner-canvas');
+  S.equipment.forEach(item => applyItemStyle(item, canvas));
+  updatePlannerStats();
+}
+
+function applyItemStyle(item, canvas) {
+  const cat = getCatalogItem(item.catalogId);
+  if (!cat) return;
+  const dim = getItemDimsMm(cat, item.orientation);
+  const sx = scX(), sy = scY();
+  const w_px = Math.max(20, dim.w * sx);
+  const h_px = Math.max(10, dim.h * sy);
+  // Clamp position
+  const maxX = CANVAS_W - w_px, maxY = CANVAS_H - h_px;
+  item.x_mm = Math.min(item.x_mm, maxX / sx);
+  item.y_mm = Math.min(item.y_mm, maxY / sy);
+  const x_px = item.x_mm * sx, y_px = item.y_mm * sy;
+  item.el.style.left   = x_px + 'px';
+  item.el.style.top    = y_px + 'px';
+  item.el.style.width  = w_px + 'px';
+  item.el.style.height = h_px + 'px';
+  // Update clearance
+  const clr = item.el.querySelector('.clearance');
+  if (clr) {
+    const cx = Math.round(600 * sx), cy = Math.round(600 * sy);
+    clr.style.inset = `-${cy}px -${cx}px`;
+  }
+}
+
+// ============================================================
+// STUDIO PLANNER — CANVAS
+// ============================================================
+let canvasScale = 1;
+function zoomCanvas(factor) {
+  canvasScale = Math.min(2, Math.max(0.3, canvasScale * factor));
+  const canvas = document.getElementById('planner-canvas');
+  canvas.style.transform = `scale(${canvasScale})`;
+  canvas.style.transformOrigin = 'center center';
+}
+function resetZoom() { canvasScale = 1; const c = document.getElementById('planner-canvas'); c.style.transform = 'scale(1)'; }
+
+function addReformerToCanvas(catalogId, orientation, x_mm, y_mm) {
+  S.reformerCount++;
+  const id = S.reformerCount;
+  const cat = getCatalogItem(catalogId);
+  if (!cat) return;
+  const canvas = document.getElementById('planner-canvas');
+  const sx = scX(), sy = scY();
+  const dim = getItemDimsMm(cat, orientation);
+  const w_px = Math.max(20, dim.w * sx);
+  const h_px = Math.max(10, dim.h * sy);
+  const cx = Math.round(600 * sx), cy = Math.round(600 * sy);
+
+  // Default position: random inside canvas if not specified
+  if (x_mm === undefined) {
+    x_mm = Math.max(0, Math.random() * (S.roomWidth - dim.w - 200));
+  }
+  if (y_mm === undefined) {
+    y_mm = Math.max(0, Math.random() * (S.roomHeight - dim.h - 200));
+  }
+
+  const isElite = cat.tier === 'PREMIUM';
+  const border   = isElite ? '2px solid #fcd400' : '1px solid rgba(0,0,0,0.15)';
+  const labelClr = isElite ? '#6e5c00' : '#000';
+  const shortName = cat.name.replace('Milaron ','') + ' #' + String(id).padStart(2,'0');
+
+  const el = document.createElement('div');
+  el.className = 'equipment-item absolute group';
+  el.dataset.rid = id;
+  el.style.cssText = `left:${x_mm*sx}px;top:${y_mm*sy}px;width:${w_px}px;height:${h_px}px;`;
+
+  el.innerHTML = `
+    <div class="clearance absolute border border-dashed border-zinc-200 rounded bg-zinc-50/30" style="inset:-${cy}px -${cx}px;">
+      <span class="absolute bottom-1 right-1 text-[6px] font-bold text-zinc-300 uppercase tracking-tight">600mm Zone</span>
+    </div>
+    <div class="relative w-full h-full bg-white shadow-sm rounded-sm flex flex-col items-center justify-center overflow-hidden" style="border:${border};">
+      <div class="w-4/5 rounded-sm bg-zinc-100 flex-shrink-0" style="height:35%;"></div>
+      <span class="text-[7px] font-bold uppercase tracking-wider mt-1 px-1 text-center truncate w-full" style="color:${labelClr};">${shortName}</span>
+      <button class="absolute top-0.5 right-0.5 text-[10px] text-zinc-300 hover:text-red-500 font-bold leading-none px-0.5 transition-colors" onclick="removeReformer(${id})" title="Remove">×</button>
+    </div>`;
+
+  const item = { id, catalogId, orientation, x_mm, y_mm, el };
+  S.equipment.push(item);
+  canvas.appendChild(el);
+  makeDraggable(el, canvas, item);
+  plannerRecalc();
+}
+
+function removeReformer(id) {
+  const idx = S.equipment.findIndex(e => e.id === id);
+  if (idx >= 0) { S.equipment[idx].el.remove(); S.equipment.splice(idx,1); }
+  plannerRecalc();
+}
+
+function clearCanvas() {
+  S.equipment.forEach(e => e.el.remove());
+  S.equipment = [];
+  plannerRecalc();
+}
+
+function makeDraggable(el, canvas, item) {
+  el.addEventListener('mousedown', function(e) {
+    if (e.target.tagName === 'BUTTON') return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const ox = e.clientX - rect.left - el.offsetLeft;
+    const oy = e.clientY - rect.top  - el.offsetTop;
+    el.style.zIndex = 10;
+
+    function onMove(ev) {
+      const r = canvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(r.width  - el.offsetWidth,  ev.clientX - r.left - ox));
+      const y = Math.max(0, Math.min(r.height - el.offsetHeight, ev.clientY - r.top  - oy));
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+      item.x_mm = x / scX();
+      item.y_mm = y / scY();
+      updatePlannerStats();
+    }
+    function onUp() {
+      el.style.zIndex = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+function updatePlannerStats() {
+  const qty = S.equipment.length;
+  // Area = sum of all item areas in mm² / room area in mm²
+  let usedMm2 = 0;
+  S.equipment.forEach(item => {
+    const cat = getCatalogItem(item.catalogId);
+    if (cat) {
+      const dim = getItemDimsMm(cat, item.orientation);
+      usedMm2 += dim.w * dim.h;
+    }
+  });
+  const roomMm2 = S.roomWidth * S.roomHeight;
+  const pctArea = qty > 0 ? Math.min(100, Math.round((usedMm2 / roomMm2) * 100)) : 0;
+  setText('planner-qty', qty);
+  setText('planner-area', pctArea + '%');
+  setText('planner-room-count', Math.ceil(qty / 12) || 1);
+}
+
+function toggleSafety() {
+  S.safety = !S.safety;
+  const btn  = document.getElementById('safety-btn');
+  const knob = document.getElementById('safety-knob');
+  if (S.safety) {
+    btn.style.background = '#000';
+    knob.style.marginLeft = 'auto';
+  } else {
+    btn.style.background = '#d1d5db';
+    knob.style.marginLeft = '0';
+  }
+  document.querySelectorAll('.clearance').forEach(c => { c.style.visibility = S.safety ? '' : 'hidden'; });
+}
+
+// ============================================================
+// AUTO-ARRANGE
+// ============================================================
+let _arrDir = 'h';
+
+function setArrDir(d) {
+  _arrDir = d;
+  document.getElementById('arr-h-btn').className = d === 'h'
+    ? 'border-2 border-black rounded-xl p-4 flex flex-col items-center gap-2 transition-all'
+    : 'border border-black/10 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:border-black/30';
+  document.getElementById('arr-v-btn').className = d === 'v'
+    ? 'border-2 border-black rounded-xl p-4 flex flex-col items-center gap-2 transition-all'
+    : 'border border-black/10 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:border-black/30';
+  // Update button text colours
+  document.getElementById('arr-h-btn').querySelector('span').style.color = d==='h'?'#000':'#737373';
+  document.getElementById('arr-v-btn').querySelector('span').style.color = d==='v'?'#000':'#737373';
+}
+
+function openArrangeModal() {
+  setText('arr-preview-text', `Arrange ${S.equipment.length} reformer${S.equipment.length!==1?'s':''}`);
+  const wm = (S.roomWidth/1000).toFixed(1), hm = (S.roomHeight/1000).toFixed(1);
+  setText('arr-room-text', `${wm}×${hm}m`);
+  document.getElementById('modal-arrange').classList.add('open');
+}
+function closeArrangeModal() { document.getElementById('modal-arrange').classList.remove('open'); }
+
+function autoArrange() {
+  const gapSide = parseFloat(document.getElementById('arr-gap-side').value) || 600;
+  const gapUD   = parseFloat(document.getElementById('arr-gap-ud').value)   || 800;
+  const orientation = _arrDir;
+  const marginX = 300, marginY = 300; // start margin mm
+
+  let x_mm = marginX, y_mm = marginY, rowMaxH = 0;
+
+  S.equipment.forEach(item => {
+    const cat = getCatalogItem(item.catalogId);
+    if (!cat) return;
+    const dim = getItemDimsMm(cat, orientation);
+
+    // Would this item go off the right edge? Start new row.
+    if (x_mm + dim.w > S.roomWidth - marginX && x_mm > marginX) {
+      x_mm = marginX;
+      y_mm += rowMaxH + gapUD;
+      rowMaxH = 0;
+    }
+
+    item.x_mm = x_mm;
+    item.y_mm = y_mm;
+    item.orientation = orientation;
+    rowMaxH = Math.max(rowMaxH, dim.h);
+    x_mm += dim.w + gapSide;
+  });
+
+  // Re-render all items with new positions/orientations
+  const canvas = document.getElementById('planner-canvas');
+  S.equipment.forEach(item => {
+    const cat = getCatalogItem(item.catalogId);
+    if (!cat) return;
+    const dim = getItemDimsMm(cat, item.orientation);
+    const sx = scX(), sy = scY();
+    const w_px = Math.max(20, dim.w * sx);
+    const h_px = Math.max(10, dim.h * sy);
+    const cx = Math.round(600 * sx), cy = Math.round(600 * sy);
+    item.el.style.left   = (item.x_mm * sx) + 'px';
+    item.el.style.top    = (item.y_mm * sy) + 'px';
+    item.el.style.width  = w_px + 'px';
+    item.el.style.height = h_px + 'px';
+    const clr = item.el.querySelector('.clearance');
+    if (clr) clr.style.inset = `-${cy}px -${cx}px`;
+  });
+
+  closeArrangeModal();
+  updatePlannerStats();
+  showToast('REFORMERS ARRANGED');
+}
+
+// ============================================================
+// ADD REFORMER MODAL
+// ============================================================
+function setAddOrientation(o) {
+  S.addOrientation = o;
+  document.getElementById('orient-h').className = 'orient-btn' + (o==='h'?' active':'');
+  document.getElementById('orient-v').className = 'orient-btn' + (o==='v'?' active':'');
+}
+
+function openAddModal() {
+  renderCatalogModal();
+  document.getElementById('modal-add-reformer').classList.add('open');
+}
+function closeAddModal() { document.getElementById('modal-add-reformer').classList.remove('open'); }
+
+function renderCatalogModal() {
+  const grid = document.getElementById('modal-catalog-grid');
+  grid.innerHTML = S.catalog.map(cat => `
+    <div class="border border-black/10 rounded-xl overflow-hidden cursor-pointer hover:border-black hover:shadow-lg transition-all group" onclick="addFromModal('${cat.id}')">
+      <div class="bg-[#f3f3f4] p-6 flex items-center justify-center h-28">
+        <img src="${cat.img}" class="h-full object-contain group-hover:scale-105 transition-transform duration-300" alt="${cat.name}">
+      </div>
+      <div class="p-4">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="font-manrope font-semibold text-sm">${cat.name}</h4>
+          <span class="text-[8px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-1.5 py-0.5 rounded">${cat.tier}</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1 text-center">
+          <div><p class="text-[7px] uppercase tracking-wider text-neutral-400 font-bold">L</p><p class="font-mono text-[10px] font-bold">${cat.length}mm</p></div>
+          <div><p class="text-[7px] uppercase tracking-wider text-neutral-400 font-bold">W</p><p class="font-mono text-[10px] font-bold">${cat.width}mm</p></div>
+          <div><p class="text-[7px] uppercase tracking-wider text-neutral-400 font-bold">H</p><p class="font-mono text-[10px] font-bold">${cat.height}mm</p></div>
+        </div>
+        <div class="mt-3 w-full bg-black text-white text-[9px] font-bold tracking-widest uppercase py-2.5 rounded-lg text-center group-hover:bg-zinc-800 transition-colors">
+          Add to Planner
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function addFromModal(catalogId) {
+  closeAddModal();
+  setTimeout(() => {
+    addReformerToCanvas(catalogId, S.addOrientation);
+    const cat = getCatalogItem(catalogId);
+    showToast((cat ? cat.name.toUpperCase() : catalogId.toUpperCase()) + ' ADDED');
+  }, 200);
+}
+
+// ============================================================
+// CUSTOM EQUIPMENT
+// ============================================================
+function openCustomModal() {
+  document.getElementById('modal-custom').classList.add('open');
+}
+function closeCustomModal() { document.getElementById('modal-custom').classList.remove('open'); }
+
+function createCustomEquipment() {
+  const name   = document.getElementById('custom-name').value.trim() || 'Custom Reformer';
+  const length = parseInt(document.getElementById('custom-length').value) || 2400;
+  const width  = parseInt(document.getElementById('custom-width').value)  || 690;
+  const height = parseInt(document.getElementById('custom-height').value) || 350;
+  const price  = parseInt(document.getElementById('custom-price').value)  || 3500;
+
+  S.customCounter++;
+  const id = 'custom_' + S.customCounter;
+  const cat = { id, name, tier:'CUSTOM', length, width, height, price, img:'' };
+  S.catalog.push(cat);
+
+  // Add card to dashboard grid (before the "Add Custom" placeholder)
+  const placeholder = document.getElementById('custom-grid-placeholder');
+  const grid = document.getElementById('equipment-grid');
+  const card = document.createElement('div');
+  card.className = 'equipment-card bg-white border border-black/5 rounded-xl overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-2xl';
+  card.dataset.name = name.toLowerCase();
+  card.dataset.tier = 'custom';
+  card.dataset.catalogId = id;
+  card.innerHTML = `
+    <div class="aspect-[4/3] bg-[#f3f3f4] flex items-center justify-center p-10 relative overflow-hidden">
+      <div class="flex flex-col items-center gap-2 text-neutral-400">
+        <span class="material-symbols-outlined text-5xl">fitness_center</span>
+        <span class="text-[10px] font-bold tracking-widest uppercase">Custom Unit</span>
+      </div>
+    </div>
+    <div class="p-6 flex flex-col flex-1 gap-3">
+      <div class="flex justify-between items-start">
+        <h3 class="font-manrope font-semibold text-xl">${name}</h3>
+        <span class="text-[9px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-2 py-1 rounded">CUSTOM</span>
+      </div>
+      <div class="grid grid-cols-3 gap-2 py-3">
+        <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">${length}mm</p></div>
+        <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">${width}mm</p></div>
+        <div><p class="text-[9px] font-bold tracking-wider uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">${height}mm</p></div>
+      </div>
+      <button class="mt-auto w-full border border-black/10 text-black text-[10px] font-bold tracking-widest uppercase py-4 rounded-lg hover:bg-black hover:text-white transition-all"
+        onclick="openSpec('${id}','${name}','CUSTOM','${length}mm','${width}mm','${height}mm','Custom','—','—','—','${price.toLocaleString()}')">View Specs</button>
+    </div>`;
+  grid.insertBefore(card, placeholder);
+
+  closeCustomModal();
+  showToast(name.toUpperCase() + ' CREATED');
+  // Reset form
+  document.getElementById('custom-name').value = '';
+  document.getElementById('custom-length').value = '2400';
+  document.getElementById('custom-width').value = '690';
+  document.getElementById('custom-height').value = '350';
+  document.getElementById('custom-price').value = '3500';
+}
+
+// ============================================================
+// EQUIPMENT LIBRARY (Dashboard)
+// ============================================================
+function filterEquipment(tier) {
+  document.querySelectorAll('.equipment-card').forEach(c => {
+    c.style.display = (tier === 'all' || c.dataset.tier === tier) ? '' : 'none';
+  });
+  document.querySelectorAll('.eq-filter').forEach(b => {
+    const isActive = b.dataset.tier === tier;
+    b.className = `eq-filter text-[11px] font-bold tracking-widest uppercase ${isActive ? 'text-black border-b border-black pb-0.5' : 'text-neutral-400 hover:text-black transition-colors'}`;
+  });
+}
+
+function searchEquipment(q) {
+  const lq = q.toLowerCase().trim();
+  document.querySelectorAll('.equipment-card').forEach(c => {
+    c.style.display = (!lq || (c.dataset.name||'').includes(lq)) ? '' : 'none';
+  });
+}
+
+function openSpec(catalogId, name, tier, len, w, h, frame, weight, spring, upholstery, price) {
+  S.specCatalogId = catalogId;
+  S.specData = { name, catalogId };
+  setText('spec-name',       name);
+  setText('spec-frame',      frame);
+  setText('spec-weight',     weight);
+  setText('spec-spring',     spring);
+  setText('spec-upholstery', upholstery);
+  setText('spec-price',      '$' + price);
+  document.getElementById('spec-panel').classList.add('open');
+}
+
+function closeSpec() {
+  document.getElementById('spec-panel').classList.remove('open');
+  S.specCatalogId = null; S.specData = null;
+}
+
+function addToPlanner() {
+  if (!S.specCatalogId) return;
+  const cid = S.specCatalogId;
+  closeSpec();
+  navigate('planner');
+  setTimeout(() => {
+    addReformerToCanvas(cid, 'h');
+    const cat = getCatalogItem(cid);
+    showToast((cat ? cat.name.toUpperCase() : cid.toUpperCase()) + ' ADDED TO PLANNER');
+  }, 350);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+navigate('dashboard');
+
+// Populate planner with default items
+(function() {
+  const defaults = [
+    { catalogId:'elite', orientation:'h', x_mm:700,  y_mm:500  },
+    { catalogId:'pro2',  orientation:'h', x_mm:700,  y_mm:1700 },
+    { catalogId:'pro2',  orientation:'h', x_mm:3900, y_mm:500  },
+    { catalogId:'studio',orientation:'h', x_mm:3900, y_mm:1700 },
+  ];
+  defaults.forEach(d => addReformerToCanvas(d.catalogId, d.orientation, d.x_mm, d.y_mm));
+  S.profit.nr = S.equipment.length;
+  recalc();
+})();
+
+// Sync planner panel inputs from state
+(function() {
+  const p = S.profit;
+  document.getElementById('pl-ipr').value   = p.ipr;
+  document.getElementById('pl-cpw').value   = p.cpw;
+  document.getElementById('pl-rent').value  = p.rent;
+  document.getElementById('pl-staff').value = p.staff;
+  document.getElementById('pl-other').value = p.other;
+  document.getElementById('pl-cpr').value   = p.cpr;
+  plannerRecalc();
+})();
+</script>
+</body>
+</html>
