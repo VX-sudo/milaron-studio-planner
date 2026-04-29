@@ -1077,8 +1077,14 @@ function plannerGoTo(step) {
 function plannerSubmitLead() {
   const name  = document.getElementById('pl-lead-name')?.value.trim();
   const email = document.getElementById('pl-lead-email')?.value.trim();
+  const phone = document.getElementById('pl-lead-phone')?.value.trim();
   if (!name || !email) { showToast('Please enter your name and email'); return; }
-  saveLead({ name, email, phone: document.getElementById('pl-lead-phone')?.value.trim() });
+  saveLead({ name, email, phone });
+  fetch('https://formspree.io/f/mojygggl', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, phone })
+  });
   plannerGoTo(5);
 }
 
@@ -1270,8 +1276,14 @@ function profitGoTo(step) {
 function profitSubmitLead() {
   const name  = document.getElementById('pr-lead-name')?.value.trim();
   const email = document.getElementById('pr-lead-email')?.value.trim();
+  const phone = document.getElementById('pr-lead-phone')?.value.trim();
   if (!name || !email) { showToast('Please enter your name and email'); return; }
-  saveLead({ name, email, phone: document.getElementById('pr-lead-phone')?.value.trim() });
+  saveLead({ name, email, phone });
+  fetch('https://formspree.io/f/mojygggl', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, phone })
+  });
   profitGoTo(5);
 }
 

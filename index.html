@@ -779,8 +779,14 @@ function requireLead(onSuccess) {
 function submitLead() {
   const name  = document.getElementById('lead-name').value.trim();
   const email = document.getElementById('lead-email').value.trim();
+  const phone = document.getElementById('lead-phone').value.trim();
   if (!name || !email) { showToast('PLEASE ENTER YOUR NAME AND EMAIL'); return; }
-  saveLead({ name, email, phone: document.getElementById('lead-phone').value.trim() });
+  saveLead({ name, email, phone });
+  fetch('https://formspree.io/f/mojygggl', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, phone })
+  });
   document.getElementById('modal-lead').classList.remove('open');
   if (_pendingNav) { _pendingNav(); _pendingNav = null; }
 }
