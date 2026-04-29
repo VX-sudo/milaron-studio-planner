@@ -1,0 +1,350 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f9f9f9",
+                    "secondary-fixed-dim": "#e9c400",
+                    "secondary-fixed": "#ffe16d",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-primary": "#c6c6c6",
+                    "surface": "#f9f9f9",
+                    "surface-container-low": "#f3f3f4",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#1a1c1c",
+                    "error": "#ba1a1a",
+                    "outline": "#7e7576",
+                    "surface-container-high": "#e8e8e8",
+                    "on-secondary-fixed-variant": "#544600",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#dadada",
+                    "on-primary-fixed-variant": "#474747",
+                    "surface-bright": "#f9f9f9",
+                    "on-error": "#ffffff",
+                    "tertiary": "#000000",
+                    "outline-variant": "#cfc4c5",
+                    "on-surface-variant": "#4c4546",
+                    "surface-tint": "#5e5e5e",
+                    "surface-container": "#eeeeee",
+                    "on-tertiary-container": "#808487",
+                    "on-secondary-fixed": "#221b00",
+                    "inverse-on-surface": "#f0f1f1",
+                    "surface-container-highest": "#e2e2e2",
+                    "surface-variant": "#e2e2e2",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#848484",
+                    "primary-fixed-dim": "#c6c6c6",
+                    "on-primary-fixed": "#1b1b1b",
+                    "primary": "#000000",
+                    "secondary-container": "#fcd400",
+                    "inverse-surface": "#2f3131",
+                    "secondary": "#705d00",
+                    "primary-container": "#1b1b1b",
+                    "on-tertiary-fixed": "#181c1e",
+                    "on-secondary-container": "#6e5c00",
+                    "on-tertiary-fixed-variant": "#43474a",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#c3c7ca",
+                    "tertiary-container": "#181c1e",
+                    "primary-fixed": "#e2e2e2",
+                    "tertiary-fixed": "#e0e3e6",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#1a1c1c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "sm": "12px",
+                    "md": "24px",
+                    "margin-mobile": "16px",
+                    "base": "8px",
+                    "lg": "48px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Manrope"],
+                    "body-md": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "data-mono": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .spec-drawer-active {
+            box-shadow: -20px 0 60px rgba(0,0,0,0.05);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex overflow-hidden">
+<!-- SideNavBar (Updated to match SCREEN_40 styling) -->
+<aside class="fixed left-0 top-0 h-screen w-64 z-50 bg-black dark:bg-neutral-950 flex flex-col border-r border-white/10 font-body-md text-sm font-medium tracking-wide">
+<div class="px-8 py-10">
+<span class="text-white font-manrope font-bold text-xl tracking-tighter uppercase" style="">Milaron Studio</span>
+<p class="text-[10px] text-neutral-500 tracking-[0.2em] mt-1 uppercase font-inter" style="">Premium Management</p>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-6 py-3 text-neutral-400 hover:text-white transition-colors hover:bg-white/5 font-inter" href="#" style="">
+<span class="material-symbols-outlined" data-icon="dashboard" style="">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-neutral-400 hover:text-white transition-colors hover:bg-white/5 font-inter" href="#" style="">
+<span class="material-symbols-outlined" data-icon="architecture" style="">architecture</span>
+                Studio Planner
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-yellow-400 bg-white/5 border-r-2 border-yellow-400 font-inter" href="#" style="">
+<span class="material-symbols-outlined" data-icon="fitness_center" style="">fitness_center</span>
+                Equipment Library
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-neutral-400 hover:text-white transition-colors hover:bg-white/5 font-inter" href="#" style="">
+<span class="material-symbols-outlined" data-icon="group" style="">group</span>
+                Profit Analysis
+            </a>
+</nav>
+<div class="px-4 py-8 space-y-2 border-t border-white/10">
+<a class="flex items-center gap-3 px-6 py-3 text-neutral-400 hover:text-white transition-colors font-inter" href="#" style="">
+<span class="material-symbols-outlined" data-icon="settings" style="">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-neutral-400 hover:text-white transition-colors font-inter" href="#" style="">
+<span class="material-symbols-outlined" data-icon="help" style="">help</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Canvas (Offset by sidebar width) -->
+<main class="flex-1 ml-64 flex flex-col relative h-screen overflow-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-desktop w-full sticky top-0 z-40 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-neutral-200/50 dark:border-neutral-800/50 h-20">
+<div class="flex items-center gap-8">
+<span class="text-lg font-extrabold tracking-tight text-neutral-900 dark:text-neutral-50 uppercase" style="">Equipment Library</span>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<nav class="hidden md:flex gap-6">
+<a class="text-neutral-500 dark:text-neutral-400 font-label-caps text-[10px] uppercase tracking-[0.2em] hover:text-primary transition-colors" href="#" style=""><br></a>
+<a class="text-neutral-900 dark:text-neutral-50 font-label-caps text-[10px] uppercase tracking-[0.2em] border-b border-primary pb-1" href="#" style=""><br></a>
+<a class="text-neutral-500 dark:text-neutral-400 font-label-caps text-[10px] uppercase tracking-[0.2em] hover:text-primary transition-colors" href="#" style=""><br></a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="font-label-caps text-[10px] uppercase tracking-widest text-neutral-500 hover:text-primary" style="">Save Draft</button>
+<button class="font-label-caps text-[10px] uppercase tracking-widest bg-primary text-on-primary px-6 py-3 rounded-lg" style="">Export Plan</button>
+</div>
+<div class="flex items-center gap-3 text-neutral-500">
+<span class="material-symbols-outlined hover:text-primary cursor-pointer" style="">notifications</span>
+<span class="material-symbols-outlined hover:text-primary cursor-pointer" style="">more_vert</span>
+<img alt="Studio Owner Profile" class="w-10 h-10 rounded-full border border-neutral-200 object-cover" data-alt="Professional profile portrait of a studio owner in a clean white environment with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzDOKdrTY8e-R7XrOYjdTFHUFQF69SyQYzfHlJVmBGG5gnEdhR36_Sk01BSnkDMGTKvXneGhiEj48ii5ZZs2zsB_eOVZ8BdTSuL4WINArayZ9_UYnkRV2pMqQ27X-cpcpngVMX1MlOZDn7pyC2hz4wMDu_BkcYSd1AvHLOBtDCfpZpMyLk2cMmFfoBElYepJWw3hZsHQcgcKoG2DoSo1KhEcBmTvlXMuxMkg7udmKqYT3QGtK3JXEjLvAcILZqnO2l6lCyzzEbhZcC" style="">
+</div>
+</div>
+</header>
+<!-- Content Area (Airy Precision with 64px Margins) -->
+<div class="flex-1 overflow-y-auto px-margin-desktop py-lg space-y-xl no-scrollbar">
+<!-- Page Header -->
+<section class="max-w-7xl mx-auto space-y-md">
+<div class="space-y-xs">
+<p class="font-label-caps text-[10px] text-outline uppercase tracking-[0.3em]" style="">Hardware Catalog / V4.2</p>
+<h2 class="font-headline-xl text-headline-xl" style="">Equipment Library</h2>
+</div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-gutter border-b border-outline-variant/30 pb-4">
+<div class="flex items-center gap-gutter">
+<button class="font-label-caps text-[11px] text-primary border-b-2 border-primary pb-4 -mb-[18px] uppercase tracking-widest" style="">Milaron Series</button>
+<button class="font-label-caps text-[11px] text-outline hover:text-primary transition-colors pb-4 -mb-[18px] uppercase tracking-widest" style="">Custom</button>
+<button class="font-label-caps text-[11px] text-outline hover:text-primary transition-colors pb-4 -mb-[18px] uppercase tracking-widest" style="">All</button>
+</div>
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" style="">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-white border border-outline-variant/50 rounded-lg focus:border-primary focus:ring-0 text-sm font-body-sm transition-all" placeholder="Search components..." type="text">
+</div>
+</div>
+</section>
+<!-- Library Grid -->
+<section class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1: Studio Model -->
+<div class="bg-white border border-black/5 rounded-xl overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-2xl hover:shadow-black/5">
+<div class="aspect-[4/3] bg-surface-container-low flex items-center justify-center p-lg relative overflow-hidden">
+<img alt="Milaron Studio Reformer" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" data-alt="Professional pilates reformer studio model in minimalist white room with soft shadows and architectural lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_M-BkZvsTv7ItaOUn5RRT8HaVwPqK1k8r5nm9ltti2AWafOKqnbCKyKhc2jaB8wgvxQVB1LhCY_lxVTqgI8FdYN0x4GOgHiXx7DK2-F3tzrZfjeurCX3DRgQmrjzaXAXhZ-YyuU89pQ6rZ1djNXmyYBebUHDjRazTeoUvRdMC4_HQzxCQNP5UGszLczw-B0Js0iHzDGIOori50-mPl-l7UusRaqSLMJlWIUMf8x6EY7GCe32UFIngcZfn0UXvKAnSCJUE4toq8BOy" style="">
+</div>
+<div class="p-md flex flex-col flex-1 gap-sm">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-xl" style="">Milaron Studio</h3>
+<span class="font-label-caps text-[9px] bg-neutral-100 text-neutral-600 px-2 py-1 rounded tracking-widest" style="">STANDARD</span>
+</div>
+<div class="grid grid-cols-3 gap-2 py-4">
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">LENGTH</span>
+<span class="font-data-mono text-primary text-sm" style="">2400mm</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">WIDTH</span>
+<span class="font-data-mono text-primary text-sm" style="">690mm</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">HEIGHT</span>
+<span class="font-data-mono text-primary text-sm" style="">350mm</span>
+</div>
+</div>
+<button class="mt-auto w-full border border-black/10 text-primary font-label-caps text-[10px] py-4 rounded-lg hover:bg-black hover:text-white transition-all uppercase tracking-widest" style="">View Technical Specs</button>
+</div>
+</div>
+<!-- Card 2: Elite Model (Premium Highlight) -->
+<div class="bg-white border-2 border-primary rounded-xl overflow-hidden flex flex-col group transition-all duration-500 ring-4 ring-primary/5 shadow-2xl shadow-black/10">
+<div class="aspect-[4/3] bg-surface-container-low flex items-center justify-center p-lg relative overflow-hidden">
+<div class="absolute top-0 right-0 bg-secondary-container text-on-secondary-container font-label-caps text-[9px] px-4 py-2 rounded-bl-lg flex items-center gap-1 uppercase tracking-[0.15em]" style="">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                                PREMIUM
+                            </div>
+<img alt="Milaron Elite" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" data-alt="Premium black and silver elite pilates reformer with wooden accents in high-end studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8L5UvjDTqwdJ_tGz3cMMGRqnivMfbl9OShzdLqsB73k6e1Rgw6bbYtoLY0bg6ZnK3MiKmiQMd0eQzE1faE52bts2iuWVE6-9ApSo1JwQHgv6yU3wbliFxoUt_X8wqluHnbmDiBeikHu-ocv3UJRhe4yFgJxBRMMYWl4mNX1mWFMYuChGBMjzYgxZOa8Bgj_gtaBL-gQPvnIU7sH8XTwEYXsLgpEVd4C83hRYZ34IB45gQ62UvnWgCw6xY_4-4qY9POWvpNl2vUVLv" style="">
+</div>
+<div class="p-md flex flex-col flex-1 gap-sm">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-xl" style="">Milaron Elite</h3>
+<span class="font-label-caps text-[9px] bg-secondary-fixed text-on-secondary-fixed px-2 py-1 rounded tracking-widest" style="">ACTIVE</span>
+</div>
+<div class="grid grid-cols-3 gap-2 py-4">
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">LENGTH</span>
+<span class="font-data-mono text-primary text-sm" style="">2450mm</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">WIDTH</span>
+<span class="font-data-mono text-primary text-sm" style="">720mm</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">HEIGHT</span>
+<span class="font-data-mono text-primary text-sm" style="">400mm</span>
+</div>
+</div>
+<button class="mt-auto w-full bg-primary text-on-primary font-label-caps text-[10px] py-4 rounded-lg transition-all uppercase tracking-widest" style="">Spec Panel Open</button>
+</div>
+</div>
+<!-- Card 3: Pro II Model -->
+<div class="bg-white border border-black/5 rounded-xl overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-2xl hover:shadow-black/5">
+<div class="aspect-[4/3] bg-surface-container-low flex items-center justify-center p-lg relative overflow-hidden">
+<img alt="Milaron Pro II" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" data-alt="Industrial style pilates reformer with steel frame and dark upholstery on a bright studio floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHWGq5ko_AoRz_FRHURv0itQCBNMLuMRAgEXv71zsxAW9X51KFruI0F1aESBKDX55ttcJYg1kFPUqvEYNxqB_bS6Ow0BxYIM9JlaVrZjisJYvP2vwrk5ywFyctJDjooJmwa0xM8br1ljeAk6AeKWSzyAjaWzmwvRuijii5N30m7vNNINtXSw1dpOPDdmOk8ghgJYy-mPGpx_tC1gS2AE_LSDpAkKzajLTWQRKXzDJm0FHT51TlF-Akf0ZPQlLpc0VmwQJa2LyTezfX" style="">
+</div>
+<div class="p-md flex flex-col flex-1 gap-sm">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-xl" style="">Milaron Pro II</h3>
+<span class="font-label-caps text-[9px] bg-neutral-100 text-neutral-600 px-2 py-1 rounded tracking-widest" style="">PRO</span>
+</div>
+<div class="grid grid-cols-3 gap-2 py-4">
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">LENGTH</span>
+<span class="font-data-mono text-primary text-sm" style="">2380mm</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">WIDTH</span>
+<span class="font-data-mono text-primary text-sm" style="">680mm</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[9px] text-outline tracking-wider" style="">HEIGHT</span>
+<span class="font-data-mono text-primary text-sm" style="">320mm</span>
+</div>
+</div>
+<button class="mt-auto w-full border border-black/10 text-primary font-label-caps text-[10px] py-4 rounded-lg hover:bg-black hover:text-white transition-all uppercase tracking-widest" style="">View Technical Specs</button>
+</div>
+</div>
+<!-- Add Custom Equipment Card -->
+<div class="bg-white border-2 border-dashed border-outline-variant/30 rounded-xl flex flex-col items-center justify-center p-xl group cursor-pointer hover:border-primary/40 hover:bg-primary/[0.02] transition-all duration-300">
+<div class="w-20 h-20 rounded-full border border-primary/20 flex items-center justify-center mb-md group-hover:scale-110 group-hover:bg-primary group-hover:text-on-primary transition-all duration-500">
+<span class="material-symbols-outlined text-3xl" style="">add</span>
+</div>
+<h4 class="font-headline-md text-lg text-center px-4" style="">Create Custom Equipment</h4>
+<p class="font-body-sm text-center text-outline mt-3 px-8 leading-relaxed" style="">Can't find your model? Create a custom entry for your studio.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Spec Panel Drawer (No overlap with content due to relative positioning within main) -->
+<div class="absolute inset-y-0 right-0 w-[420px] bg-white border-l border-neutral-200 z-50 transform translate-x-0 spec-drawer-active flex flex-col">
+<div class="p-md border-b border-neutral-100 flex items-center justify-between h-20">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-[0.2em]" style="">Technical Detail / Milaron Elite</span>
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors" style="">close</button>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar">
+<div class="p-md space-y-lg">
+<!-- Exploded View Placeholder -->
+<div class="aspect-video bg-neutral-50 rounded-xl overflow-hidden border border-black/5 relative flex items-center justify-center">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 24px 24px;"></div>
+<img alt="Exploded View Diagram" class="w-3/4 object-contain opacity-90" data-alt="Blueprint style architectural line drawing of equipment components showing technical dimensions and exploded view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQXkQqrWXGQSqL_0Z8GFqs7tlCzDm7pA94Muxw_0UIef8P7slMSrHlfQiOIGSbYPDBpB1ikM7hRhACpQYU4Ml-NLnVGhGeSmxI4jVu1YVwEdVekkjheQir-4n5c7R7Kb-LBkXoBEhX9PCnwEqkYZLGfzxfIzmWTZTfCFtLzRdXUfAMmvUi43-6JBz44d86KA449TSFGTEDvYEjuxVd3IVuUHdNzePMp0XxSG2wF3VXNVZk-Rb19GXstksEseu38GgCjoL73U5KFohz" style="">
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded border border-black/5">
+<span class="font-data-mono text-[9px] uppercase tracking-widest" style="">DIAGRAM_04_A</span>
+</div>
+</div>
+<div class="space-y-md">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
+<h3 class="font-headline-md text-lg" style="">Product Specifications</h3>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center border-b border-neutral-50 pb-4">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-wider" style="">FRAME MATERIAL</span>
+<span class="font-body-sm font-semibold text-primary" style="">Anodized Aluminium / Beech</span>
+</div>
+<div class="flex justify-between items-center border-b border-neutral-50 pb-4">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-wider" style="">WEIGHT LIMIT</span>
+<span class="font-data-mono text-primary font-bold" style="">180 KG</span>
+</div>
+<div class="flex justify-between items-center border-b border-neutral-50 pb-4">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-wider" style="">SPRING TENSION</span>
+<span class="font-body-sm font-semibold text-primary" style="">6-Spring Custom Config</span>
+</div>
+<div class="flex justify-between items-center border-b border-neutral-50 pb-4">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-wider" style="">UPHOLSTERY</span>
+<span class="font-body-sm font-semibold text-primary" style="">Antimicrobial Vegan Leather</span>
+</div>
+</div>
+<div class="p-md bg-stone-50 rounded-xl space-y-sm border border-black/5">
+<h4 class="font-label-caps text-[9px] text-outline uppercase tracking-widest" style="">ARCHITECTURAL NOTES</h4>
+<p class="font-body-sm italic text-on-surface-variant leading-relaxed text-[13px]" style="">
+                                Requires a minimum clearance of 600mm on all sides for safety compliance. 
+                                Integrated caster system allows for easy studio reconfiguration.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-md bg-white border-t border-neutral-100">
+<button class="w-full bg-primary text-on-primary font-label-caps text-[10px] py-5 rounded-xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all uppercase tracking-widest" style="">
+<span class="material-symbols-outlined text-lg" style="">add_circle</span>
+                    ADD TO PROJECT
+                </button>
+</div>
+</div>
+</main>
+</body></html>

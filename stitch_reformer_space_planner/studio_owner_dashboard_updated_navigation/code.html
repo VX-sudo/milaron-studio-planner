@@ -1,0 +1,365 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-low": "#f3f3f4",
+                    "tertiary-container": "#181c1e",
+                    "on-primary-fixed-variant": "#474747",
+                    "primary-fixed": "#e2e2e2",
+                    "primary-fixed-dim": "#c6c6c6",
+                    "on-secondary-container": "#6e5c00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#221b00",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dadada",
+                    "secondary-container": "#fcd400",
+                    "on-secondary-container": "#6e5c00",
+                    "on-primary-container": "#848484",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#43474a",
+                    "on-surface-variant": "#4c4546",
+                    "surface-container-highest": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-bright": "#f9f9f9",
+                    "primary-container": "#1b1b1b",
+                    "on-surface": "#1a1c1c",
+                    "on-primary-fixed": "#1b1b1b",
+                    "on-tertiary-fixed": "#181c1e",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#c3c7ca",
+                    "primary": "#000000",
+                    "on-background": "#1a1c1c",
+                    "inverse-primary": "#c6c6c6",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#cfc4c5",
+                    "secondary": "#705d00",
+                    "surface-tint": "#5e5e5e",
+                    "surface": "#f9f9f9",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#808487",
+                    "background": "#f9f9f9",
+                    "secondary-fixed-dim": "#e9c400",
+                    "inverse-surface": "#2f3131",
+                    "inverse-on-surface": "#f0f1f1",
+                    "outline": "#7e7576",
+                    "on-secondary-fixed-variant": "#544600",
+                    "surface-container": "#eeeeee",
+                    "error": "#ba1a1a",
+                    "tertiary": "#000000",
+                    "tertiary-fixed": "#e0e3e6",
+                    "secondary-fixed": "#ffe16d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "80px",
+                    "sm": "12px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "margin-mobile": "16px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "margin-desktop": "64px",
+                    "lg": "48px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Manrope"],
+                    "body-sm": ["Inter"],
+                    "headline-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "data-mono": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "data-mono": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Fixed Side Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-64 z-50 bg-black flex flex-col font-body-md">
+<div class="p-8">
+<span class="text-white font-headline-md font-bold uppercase tracking-tight" style="">Milaron Studio</span>
+<p class="text-[10px] text-neutral-500 tracking-[0.2em] mt-1 uppercase" style="">Premium Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-8 py-4 text-yellow-400 bg-white/5 border-r-[3px] border-yellow-400 font-medium" href="#" style="">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: &quot;FILL&quot; 1;">dashboard</span>
+<span class="font-body-md" style="">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-neutral-400 hover:text-white transition-colors hover:bg-white/5 font-medium" href="#" style="">
+<span class="material-symbols-outlined" data-icon="architecture" style="">architecture</span>
+<span class="font-body-md" style="">Studio Planner</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-neutral-400 hover:text-white transition-colors hover:bg-white/5 font-medium" href="#" style="">
+<span class="material-symbols-outlined" data-icon="fitness_center" style="">fitness_center</span>
+<span class="font-body-md" style="">Equipment Library</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-neutral-400 hover:text-white transition-colors hover:bg-white/5 font-medium" href="#" style="">
+<span class="material-symbols-outlined" data-icon="analytics" style="">analytics</span>
+<span class="font-body-md" style="">Profit Analysis</span>
+</a>
+</nav>
+<div class="mt-auto py-8 space-y-1 border-t border-white/10">
+<a class="flex items-center gap-4 px-8 py-4 text-neutral-400 hover:text-white transition-colors font-medium" href="#" style="">
+<span class="material-symbols-outlined" data-icon="settings" style="">settings</span>
+<span class="font-body-md" style="">Settings</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-neutral-400 hover:text-white transition-colors font-medium" href="#" style="">
+<span class="material-symbols-outlined" data-icon="help" style="">help</span>
+<span class="font-body-md" style="">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 h-screen overflow-y-auto no-scrollbar pt-20 px-margin-desktop pb-xl">
+<!-- Top App Bar (Managed Layout) -->
+<header class="fixed top-0 right-0 left-64 h-20 z-40 bg-[#EEF1F4]/90 backdrop-blur-md flex justify-between items-center px-16 border-b border-black/5">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-md text-primary" style="">Studio Overview</h1>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<div class="flex gap-6 font-label-caps text-[12px] uppercase tracking-widest text-neutral-500">
+<a class="hover:text-primary transition-colors" href="#" style=""><br></a>
+<a class="hover:text-primary transition-colors" href="#" style=""><br></a>
+<a class="hover:text-primary transition-colors" href="#" style=""><br></a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2 border border-primary text-primary font-label-caps text-[10px] hover:bg-primary/5 transition-colors rounded-lg" style=""><br></button>
+<button class="px-6 py-2 bg-primary text-on-primary font-label-caps text-[10px] rounded-lg" style="">New Room</button>
+</div>
+</header>
+<!-- Metrics Ribbon -->
+<section class="mt-8 mb-lg grid grid-cols-4 gap-gutter">
+<div class="bg-surface-container-lowest p-md border border-black/5 rounded-xl shadow-sm flex flex-col gap-2">
+<span class="text-label-caps text-on-surface-variant" style="">Total Reformers</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-secondary" style="">42</span>
+<span class="text-body-sm text-on-surface-variant font-medium" style="">Units</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-md border border-black/5 rounded-xl shadow-sm flex flex-col gap-2">
+<span class="text-label-caps text-on-surface-variant" style="">Active Rooms</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-secondary" style="">4</span>
+<span class="text-body-sm text-on-surface-variant font-medium" style="">Hubs</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-md border border-black/5 rounded-xl shadow-sm flex flex-col gap-2">
+<span class="text-label-caps text-on-surface-variant" style="">Utilization</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-secondary" style="">88%</span>
+<span class="text-body-sm text-on-surface-variant font-medium text-error flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up" style="">trending_up</span>
+                        +2%
+                    </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-md border border-black/5 rounded-xl shadow-sm flex flex-col gap-2">
+<span class="text-label-caps text-on-surface-variant" style="">Revenue Growth</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-secondary" style="">+12%</span>
+<span class="text-body-sm text-on-surface-variant font-medium text-outline" style="">MTD</span>
+</div>
+</div>
+</section>
+<!-- Room Grid -->
+<section class="grid grid-cols-3 gap-gutter mb-xl">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-black/5 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
+<div class="aspect-video bg-surface-container relative">
+<img class="w-full h-full object-cover opacity-80 mix-blend-multiply grayscale contrast-125" data-alt="Technical architectural floor plan of a minimalist pilates studio with reformer placements and wide windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVhNneGhbzXcSVSTU_00KtG-mOVd9lfSOuwkEOUuZEaVbfSyJ2DOZogwrRQUtvaNpTec3wmlqi149TeUJLvwYa2KNRjNqz9e2nvvAMlu1514JxnlnYO9nd_hAWEVg8hUsXKCL4koJaDkcLCUtX8pZdUNuMk_EbwAq71bHVL0WFZxZFwfPPqy-mi50xQLRJpLwcVH9oHU6pczGwa3xZdxul2Czatdy9qgkgmkOLofVtpjdmEh5ceLwqnaWFWn7f2yuc8hdNLl8Cp2hu" style="">
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+<span class="absolute top-4 left-4 bg-primary text-on-primary text-[10px] font-label-caps px-3 py-1 rounded-full" style="">Primary</span>
+</div>
+<div class="p-md space-y-4">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md" style="">Zen Loft</h3>
+<span class="text-data-mono text-secondary" style="">12/12</span>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-2">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant mb-1" style="">Last Session</span>
+<span class="text-body-sm font-medium" style="">2h ago</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant mb-1" style="">Maintenance</span>
+<span class="text-body-sm font-medium text-secondary" style="">Optimal</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary font-label-caps rounded-lg flex items-center justify-center gap-2 group-hover:bg-primary/90 transition-colors" style="">
+                        Launch Planner
+                        <span class="material-symbols-outlined text-sm" data-icon="arrow_forward" style="">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-black/5 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
+<div class="aspect-video bg-surface-container relative">
+<img class="w-full h-full object-cover opacity-80 mix-blend-multiply grayscale contrast-125" data-alt="Blueprint overview of a large fitness sanctuary with equipment layout and architectural measurements" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHu2QJapfX8LNcwmqpL2D58dFsNImxehY0z4Ly3sdi6MP6Xsm8In1Mmn0-rhCDBTkcu7HZr1672B9qy-WzC-KUPQe3qivZvqmM5mKN7grkus4mwOxYya3x4Fge9RgzJC2nINEWTDKnJf2BafgzUZVGOUZXP4PswBNVMi07QUD1sQM8aY4sXFAE6zcCfh8Zi1xzLM0kDL9cxxPWFNsMNBBEnGrE7uTwsRPKinSKVftP9vuhJyv631r-ON8wWcXHiL5RYOj-kpizDW1e" style="">
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+<span class="absolute top-4 left-4 bg-surface-variant text-primary text-[10px] font-label-caps px-3 py-1 rounded-full" style="">Expansion</span>
+</div>
+<div class="p-md space-y-4">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md" style="">Main Sanctuary</h3>
+<span class="text-data-mono text-secondary" style="">08/24</span>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-2">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant mb-1" style="">Last Session</span>
+<span class="text-body-sm font-medium" style="">15m ago</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant mb-1" style="">Maintenance</span>
+<span class="text-body-sm font-medium text-secondary" style="">Optimal</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary font-label-caps rounded-lg flex items-center justify-center gap-2 group-hover:bg-primary/90 transition-colors" style="">
+                        Launch Planner
+                        <span class="material-symbols-outlined text-sm" data-icon="arrow_forward" style="">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-black/5 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group border-dashed">
+<div class="h-full flex flex-col items-center justify-center p-xl text-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-3xl" data-icon="add" style="">add</span>
+</div>
+<div>
+<h3 class="font-headline-md" style="">Add Studio Room</h3>
+<p class="text-body-sm text-on-surface-variant px-4" style="">Expand your floor plan and equipment management</p>
+</div>
+<button class="px-8 py-3 border border-outline text-primary font-label-caps rounded-lg hover:bg-primary hover:text-white transition-all" style="">
+                        Initialize Layout
+                    </button>
+</div>
+</div>
+</section>
+<!-- Financial Section: Profit Trend -->
+<section class="bg-surface-container-lowest p-lg rounded-xl border border-black/5 shadow-sm">
+<div class="flex justify-between items-end mb-lg">
+<div>
+<span class="text-label-caps text-on-surface-variant mb-2 block" style="">Performance Analytics</span>
+<h2 class="font-headline-lg" style="">Profit Trend</h2>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="text-label-caps text-on-surface-variant" style="">Actuals</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+<span class="text-label-caps text-on-surface-variant" style="">Projected</span>
+</div>
+</div>
+</div>
+<div class="relative h-64 w-full">
+<!-- Simple SVG Graph Representation -->
+<svg class="w-full h-full overflow-visible" viewBox="0 0 1000 200">
+<!-- Grid Lines -->
+<line class="text-surface-container" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="0" y2="0"></line>
+<line class="text-surface-container" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="50" y2="50"></line>
+<line class="text-surface-container" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="100" y2="100"></line>
+<line class="text-surface-container" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="150" y2="150"></line>
+<line class="text-surface-container" stroke="currentColor" stroke-width="1" x1="0" x2="1000" y1="200" y2="200"></line>
+<!-- Path Actual -->
+<path d="M0,180 L100,160 L200,170 L300,130 L400,110 L500,140 L600,90 L700,70 L800,85 L900,40 L1000,20" fill="none" stroke="#705d00" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Area Gradient -->
+<path d="M0,180 L100,160 L200,170 L300,130 L400,110 L500,140 L600,90 L700,70 L800,85 L900,40 L1000,20 L1000,200 L0,200 Z" fill="url(#grad1)" opacity="0.1"></path>
+<defs>
+<linearGradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#705d00;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#705d00;stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+</svg>
+<!-- X-Axis Labels -->
+<div class="flex justify-between mt-4 font-data-mono text-on-surface-variant uppercase text-[10px]">
+<span class="" style="">Jan</span>
+<span class="" style="">Feb</span>
+<span class="" style="">Mar</span>
+<span class="" style="">Apr</span>
+<span class="" style="">May</span>
+<span class="" style="">Jun</span>
+<span class="" style="">Jul</span>
+<span class="" style="">Aug</span>
+<span class="" style="">Sep</span>
+<span class="" style="">Oct</span>
+<span class="" style="">Nov</span>
+<span class="" style="">Dec</span>
+</div>
+</div>
+</section>
+<!-- Equipment Overview Bento -->
+<section class="mt-lg grid grid-cols-12 gap-gutter">
+<div class="col-span-8 bg-primary-container text-on-primary rounded-xl p-lg flex items-center justify-between">
+<div class="space-y-4">
+<span class="text-label-caps text-on-primary-container" style="">Strategic Focus</span>
+<h3 class="font-headline-md leading-tight" style="">Your studio is operating at 92% efficiency. <br>Consider adding 2 more Allegro 2 units.</h3>
+<button class="bg-secondary text-on-secondary px-8 py-2 font-label-caps rounded-lg mt-2" style="">View Capacity Report</button>
+</div>
+<div class="w-32 h-32 rounded-full border-4 border-secondary/20 flex items-center justify-center">
+<span class="font-headline-lg text-secondary" style="">92%</span>
+</div>
+</div>
+<div class="col-span-4 bg-surface-container-high rounded-xl p-lg flex flex-col justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="verified" style="">verified</span>
+</div>
+<div>
+<span class="text-label-caps text-on-surface-variant" style="">Maintenance</span>
+<h4 class="font-body-md font-bold" style="">All clear</h4>
+</div>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-4" style="">Next automated check scheduled for Monday, 8:00 AM.</p>
+<a class="text-primary font-label-caps text-[10px] mt-4 flex items-center gap-1 hover:underline underline-offset-4" href="#" style="">
+                    View Hardware Logs
+                    <span class="material-symbols-outlined text-[14px]" data-icon="open_in_new" style="">open_in_new</span>
+</a>
+</div>
+</section>
+</main>
+<!-- Floating Action Element -->
+<div class="fixed bottom-margin-mobile right-margin-mobile z-50">
+<button class="bg-secondary-container text-on-secondary-container shadow-2xl p-4 rounded-full flex items-center gap-3 group" style="">
+<span class="material-symbols-outlined font-bold" data-icon="chat_bubble" data-weight="fill" style="font-variation-settings: &quot;FILL&quot; 1;">chat_bubble</span>
+<span class="hidden group-hover:block font-label-caps text-[10px] pr-2" style="">Studio Concierge</span>
+</button>
+</div>
+</body></html>

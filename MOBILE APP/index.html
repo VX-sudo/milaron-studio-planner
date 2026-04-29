@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Milaron Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { "gold":"#fcd400", "gold-dark":"#705d00" },
+    fontFamily: { manrope:["Manrope"], inter:["Inter"] }
+  }}
+}
+</script>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;overflow:hidden;height:100dvh;display:flex;flex-direction:column;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}
+  .no-scrollbar::-webkit-scrollbar{display:none;}
+  .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+
+  /* Screens */
+  .screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+  .screen.active{display:flex;}
+
+  /* Bottom nav */
+  .bot-nav{flex-shrink:0;background:#fff;border-top:1px solid rgba(0,0,0,.08);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);}
+  .nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;gap:3px;cursor:pointer;color:#a3a3a3;transition:color .15s;}
+  .nav-tab.active{color:#000;}
+  .nav-tab span.material-symbols-outlined{font-size:22px;}
+  .nav-tab .nav-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+
+  /* Cards */
+  .card{background:#fff;border-radius:16px;border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+  /* Inputs */
+  .m-input{width:100%;border:1.5px solid rgba(0,0,0,.1);border-radius:12px;padding:14px 16px;font-size:16px;font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;outline:none;transition:border-color .15s;}
+  .m-input:focus{border-color:#000;}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{opacity:.4;}
+
+  /* Buttons */
+  .btn-primary{width:100%;background:#000;color:#fff;border:none;border-radius:14px;padding:17px;font-size:15px;font-weight:700;font-family:'Manrope',sans-serif;letter-spacing:.04em;cursor:pointer;transition:background .15s, transform .1s;-webkit-appearance:none;}
+  .btn-primary:active{background:#333;transform:scale(.98);}
+  .btn-outline{width:100%;background:transparent;color:#000;border:1.5px solid rgba(0,0,0,.15);border-radius:14px;padding:16px;font-size:15px;font-weight:700;font-family:'Manrope',sans-serif;letter-spacing:.04em;cursor:pointer;transition:all .15s;}
+  .btn-outline:active{background:#000;color:#fff;border-color:#000;}
+
+  /* Step badge */
+  .step-badge{width:32px;height:32px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+
+  /* Progress dots */
+  .prog-dot{width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.15);transition:all .3s;}
+  .prog-dot.active{width:20px;background:#000;}
+
+  /* Model card (planner step 1) */
+  .model-card{border:2px solid rgba(0,0,0,.08);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;background:#fff;display:flex;flex-direction:column;gap:10px;}
+  .model-card.selected{border-color:#000;box-shadow:0 0 0 3px rgba(0,0,0,.08);}
+
+  /* Qty stepper */
+  .stepper-btn{width:52px;height:52px;border-radius:50%;border:1.5px solid rgba(0,0,0,.12);background:#fff;font-size:24px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .stepper-btn:active{background:#000;color:#fff;border-color:#000;}
+
+  /* Canvas wrapper */
+  .canvas-wrap{position:relative;background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,.08);overflow:hidden;}
+  .dot-bg{position:absolute;inset:0;background-image:radial-gradient(circle,#000 1px,transparent 1px);background-size:20px 20px;opacity:.05;pointer-events:none;}
+
+  /* Profit question card */
+  .q-card{background:#fff;border-radius:20px;padding:28px 24px;border:1px solid rgba(0,0,0,.06);}
+
+  /* Result metric */
+  .result-metric{background:#fff;border-radius:16px;padding:20px;border:1px solid rgba(0,0,0,.06);}
+
+  /* Slide transition */
+  .slide-enter{animation:slideIn .3s ease;}
+  @keyframes slideIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+
+  /* Toast */
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(80px);background:#000;color:#fff;padding:12px 24px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.08em;transition:transform .3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* Profit result editable */
+  .editable-field{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#f9f9f9;border-radius:12px;border:1.5px solid transparent;transition:border-color .15s;}
+  .editable-field:focus-within{border-color:#000;background:#fff;}
+  .editable-field .ef-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a3a3a3;flex:1;}
+  .editable-field input{font-family:monospace;font-size:15px;font-weight:700;color:#1a1a1a;background:transparent;border:none;outline:none;text-align:right;width:100px;}
+</style>
+</head>
+<body>
+
+<!-- ========== SCREENS ========== -->
+<div id="app" class="flex-1 flex flex-col overflow-hidden">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="scr-dashboard" class="screen active">
+    <div class="flex-1 overflow-y-auto no-scrollbar">
+      <!-- Header -->
+      <div class="px-5 pt-10 pb-6" style="background:linear-gradient(160deg,#1a1a1a 0%,#2d2d2d 100%);">
+        <p class="text-[10px] font-bold tracking-[.25em] uppercase text-neutral-500 mb-1">Milaron Studio</p>
+        <h1 class="font-manrope font-bold text-3xl text-white leading-tight">Studio Overview</h1>
+        <p class="text-neutral-400 text-sm mt-1" id="dash-date"></p>
+      </div>
+
+      <div class="px-5 -mt-4 pb-24 space-y-4">
+        <!-- Stat row -->
+        <div class="grid grid-cols-2 gap-3 mt-2">
+          <div class="card p-5">
+            <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Reformers</p>
+            <p class="font-manrope font-bold text-4xl text-[#705d00]" id="d-qty">0</p>
+          </div>
+          <div class="card p-5">
+            <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Weekly Revenue</p>
+            <p class="font-manrope font-bold text-2xl text-[#705d00]" id="d-rev">A$0</p>
+          </div>
+        </div>
+        <div class="card p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Weekly Net Profit</p>
+              <p class="font-manrope font-bold text-3xl" id="d-profit">A$0</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center">
+              <span class="material-symbols-outlined text-[#705d00]">trending_up</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Equipment catalog -->
+        <div class="mt-2">
+          <p class="text-[10px] font-bold tracking-[.25em] uppercase text-neutral-400 mb-3">Equipment Catalog</p>
+          <div class="space-y-3">
+
+            <!-- Maple -->
+            <div class="card overflow-hidden" onclick="openSpec('maple-v3')">
+              <div class="bg-[#f7f7f7] flex items-center justify-center p-6" style="height:160px;">
+                <img src="../MAPLE.png" alt="Maple Studio V3" class="h-full object-contain">
+              </div>
+              <div class="p-5">
+                <div class="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <h3 class="font-manrope font-bold text-lg leading-tight">Maple Studio V3</h3>
+                    <p class="text-[10px] text-neutral-400 mt-0.5">RRP <span class="font-bold text-black">A$4,549</span></p>
+                  </div>
+                  <span class="text-[9px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-2 py-1 rounded flex-shrink-0">STUDIO</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">2280mm</p></div>
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">685mm</p></div>
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">380mm</p></div>
+                </div>
+                <div class="flex items-center gap-1 text-[10px] font-bold text-neutral-400">
+                  <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span> View Technical Specs
+                </div>
+              </div>
+            </div>
+
+            <!-- Pearl Studio -->
+            <div class="card overflow-hidden" onclick="openSpec('pearl-v3')">
+              <div class="bg-[#f7f7f7] flex items-center justify-center p-6" style="height:160px;">
+                <img src="../PEALR S.png" alt="Pearl Studio V3" class="h-full object-contain">
+              </div>
+              <div class="p-5">
+                <div class="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <h3 class="font-manrope font-bold text-lg leading-tight">Pearl Studio V3</h3>
+                    <p class="text-[10px] text-neutral-400 mt-0.5">RRP <span class="font-bold text-black">A$3,995</span></p>
+                  </div>
+                  <span class="text-[9px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-2 py-1 rounded flex-shrink-0">STUDIO</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">2356mm</p></div>
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">635mm</p></div>
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">350mm</p></div>
+                </div>
+                <div class="flex items-center gap-1 text-[10px] font-bold text-neutral-400">
+                  <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span> View Technical Specs
+                </div>
+              </div>
+            </div>
+
+            <!-- Pearl Foldable -->
+            <div class="card overflow-hidden" onclick="openSpec('pearl-fold')">
+              <div class="bg-[#f7f7f7] flex items-center justify-center p-6" style="height:160px;">
+                <img src="../PEALF.png" alt="Pearl Foldable V3" class="h-full object-contain">
+              </div>
+              <div class="p-5">
+                <div class="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <h3 class="font-manrope font-bold text-lg leading-tight">Pearl Foldable V3</h3>
+                    <p class="text-[10px] text-neutral-400 mt-0.5">RRP <span class="font-bold text-black">A$3,900</span></p>
+                  </div>
+                  <span class="text-[9px] font-bold tracking-widest uppercase bg-neutral-100 text-neutral-500 px-2 py-1 rounded flex-shrink-0">FOLDABLE</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Length</p><p class="font-mono text-sm font-bold">2350mm</p></div>
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Width</p><p class="font-mono text-sm font-bold">620mm</p></div>
+                  <div><p class="text-[9px] font-bold uppercase text-neutral-400">Height</p><p class="font-mono text-sm font-bold">300mm</p></div>
+                </div>
+                <div class="flex items-center gap-1 text-[10px] font-bold text-neutral-400">
+                  <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span> View Technical Specs
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Dashboard CTA -->
+        <div class="mt-2 rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);">
+          <div class="p-5">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-500 mb-1">Studio Fit-Out</p>
+            <h3 class="font-manrope font-bold text-xl text-white leading-tight mb-1">Contact us to plan your studio fit-out</h3>
+            <p class="text-sm text-neutral-400 mb-5">From floor plan to first class — we'll handle it.</p>
+            <a href="mailto:contact@milaron.com.au" class="flex items-center gap-3 mb-3 bg-white/10 rounded-xl px-4 py-3 active:bg-white/20 transition-colors">
+              <span class="material-symbols-outlined text-[#fcd400]" style="font-size:20px;">mail</span>
+              <span class="text-white text-sm font-semibold">contact@milaron.com.au</span>
+            </a>
+            <a href="tel:0403033226" class="flex items-center gap-3 bg-[#fcd400] rounded-xl px-4 py-3 active:opacity-80 transition-opacity">
+              <span class="material-symbols-outlined text-black" style="font-size:20px;">call</span>
+              <span class="text-black text-sm font-bold">0403 033 226</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PLANNER ===== -->
+  <div id="scr-planner" class="screen">
+    <!-- Step container -->
+    <div id="planner-steps" class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- STEP 1: Model -->
+      <div id="ps-1" class="flex-1 flex flex-col overflow-hidden slide-enter">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="step-badge">1</div>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Studio Planner · Step 1 of 3</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Choose your reformer</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-6 space-y-3">
+          <div class="model-card selected" id="mc-maple" onclick="selectModel('maple-v3', this)">
+            <div class="flex items-center gap-4">
+              <img src="../MAPLE.png" alt="Maple" class="w-20 h-14 object-contain flex-shrink-0">
+              <div class="flex-1">
+                <p class="font-manrope font-bold text-base">Maple Studio V3</p>
+                <p class="text-[10px] text-neutral-400 mt-0.5">2280 × 685 × 380 mm</p>
+                <p class="text-sm font-bold text-[#705d00] mt-1">A$4,549 RRP</p>
+              </div>
+              <div id="check-maple" class="w-6 h-6 rounded-full bg-black flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 700;">check</span>
+              </div>
+            </div>
+          </div>
+          <div class="model-card" id="mc-pearl" onclick="selectModel('pearl-v3', this)">
+            <div class="flex items-center gap-4">
+              <img src="../PEALR S.png" alt="Pearl Studio" class="w-20 h-14 object-contain flex-shrink-0">
+              <div class="flex-1">
+                <p class="font-manrope font-bold text-base">Pearl Studio V3</p>
+                <p class="text-[10px] text-neutral-400 mt-0.5">2356 × 635 × 350 mm</p>
+                <p class="text-sm font-bold text-[#705d00] mt-1">A$3,995 RRP</p>
+              </div>
+              <div id="check-pearl" class="w-6 h-6 rounded-full bg-neutral-200 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 700;">check</span>
+              </div>
+            </div>
+          </div>
+          <div class="model-card" id="mc-fold" onclick="selectModel('pearl-fold', this)">
+            <div class="flex items-center gap-4">
+              <img src="../PEALF.png" alt="Pearl Foldable" class="w-20 h-14 object-contain flex-shrink-0">
+              <div class="flex-1">
+                <p class="font-manrope font-bold text-base">Pearl Foldable V3</p>
+                <p class="text-[10px] text-neutral-400 mt-0.5">2350 × 620 × 300 mm</p>
+                <p class="text-sm font-bold text-[#705d00] mt-1">A$3,900 RRP</p>
+              </div>
+              <div id="check-fold" class="w-6 h-6 rounded-full bg-neutral-200 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 700;">check</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" onclick="plannerGoTo(2)">Continue <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">arrow_forward</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Quantity -->
+      <div id="ps-2" class="flex-1 flex flex-col overflow-hidden slide-enter" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <button onclick="plannerGoTo(1)" class="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </button>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Studio Planner · Step 2 of 3</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">How many reformers?</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot active"></div><div class="prog-dot active"></div><div class="prog-dot"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col items-center justify-center px-5 pb-6">
+          <div class="card w-full p-8 flex flex-col items-center gap-6">
+            <div class="bg-[#f7f7f7] rounded-2xl px-5 py-3 flex items-center gap-3">
+              <img id="qty-thumb" src="../MAPLE.png" alt="" class="h-10 object-contain">
+              <p class="font-manrope font-semibold text-base" id="qty-model-name">Maple Studio V3</p>
+            </div>
+            <div class="flex items-center gap-8">
+              <button class="stepper-btn" onclick="adjQty(-1)">−</button>
+              <div class="text-center">
+                <p class="font-manrope font-bold text-7xl leading-none" id="qty-display">4</p>
+                <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mt-2">reformers</p>
+              </div>
+              <button class="stepper-btn" onclick="adjQty(1)">+</button>
+            </div>
+            <div class="w-full bg-[#f7f7f7] rounded-xl p-4 text-center">
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Estimated Equipment Cost</p>
+              <p class="font-manrope font-bold text-2xl text-[#705d00]" id="qty-cost">A$18,196</p>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" onclick="plannerGoTo(3)">Continue <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">arrow_forward</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Room dimensions -->
+      <div id="ps-3" class="flex-1 flex flex-col overflow-hidden slide-enter" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <button onclick="plannerGoTo(2)" class="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </button>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Studio Planner · Step 3 of 3</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">What's your room size?</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot active"></div><div class="prog-dot active"></div><div class="prog-dot active"></div><div class="prog-dot"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center px-5 pb-6 gap-5">
+          <div class="card p-6 space-y-5">
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Room Width</label>
+              <div class="flex items-center gap-3">
+                <input id="r-width" type="number" value="12" min="1" max="100" step="0.5" class="m-input flex-1">
+                <span class="text-base font-bold text-neutral-400 w-6">m</span>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Room Depth</label>
+              <div class="flex items-center gap-3">
+                <input id="r-depth" type="number" value="8" min="1" max="100" step="0.5" class="m-input flex-1">
+                <span class="text-base font-bold text-neutral-400 w-6">m</span>
+              </div>
+            </div>
+            <div class="border-t border-black/5 pt-4">
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Orientation</p>
+              <div class="grid grid-cols-2 gap-3">
+                <button id="ori-h" onclick="setPlannerOri('h')" class="border-2 border-black rounded-xl p-4 flex flex-col items-center gap-2">
+                  <div class="flex flex-col gap-1 w-full">
+                    <div class="w-full h-2.5 bg-black rounded-sm"></div>
+                    <div class="w-full h-2.5 bg-black rounded-sm"></div>
+                    <div class="w-3/4 h-2.5 bg-black rounded-sm"></div>
+                  </div>
+                  <span class="text-[9px] font-bold tracking-widest uppercase">Lengthwise</span>
+                </button>
+                <button id="ori-v" onclick="setPlannerOri('v')" class="border border-black/10 rounded-xl p-4 flex flex-col items-center gap-2">
+                  <div class="flex flex-row gap-1 justify-center">
+                    <div class="w-2.5 h-8 bg-neutral-300 rounded-sm"></div>
+                    <div class="w-2.5 h-8 bg-neutral-300 rounded-sm"></div>
+                    <div class="w-2.5 h-8 bg-neutral-300 rounded-sm"></div>
+                  </div>
+                  <span class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Crosswise</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" onclick="runAutoArrange()">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">arrow_forward</span> Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Your Details (lead capture) -->
+      <div id="ps-4" class="flex-1 flex flex-col overflow-hidden slide-enter" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <button onclick="plannerGoTo(3)" class="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </button>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Studio Planner · Step 4 of 4</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Almost there</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot active"></div><div class="prog-dot active"></div><div class="prog-dot active"></div><div class="prog-dot active"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center px-5 pb-6 gap-4">
+          <div class="card p-6 space-y-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-full bg-black flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white" style="font-size:20px;">architecture</span>
+              </div>
+              <div>
+                <p class="font-manrope font-bold text-base leading-tight">Get your studio layout</p>
+                <p class="text-xs text-neutral-400">Enter your details to view your plan</p>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Your Name</label>
+              <input id="pl-lead-name" type="text" placeholder="e.g. Sarah Johnson" class="m-input" autocomplete="name">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Email Address</label>
+              <input id="pl-lead-email" type="email" placeholder="e.g. sarah@studio.com.au" class="m-input" autocomplete="email">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Phone <span class="text-neutral-300 normal-case tracking-normal font-normal">(optional)</span></label>
+              <input id="pl-lead-phone" type="tel" placeholder="e.g. 0400 000 000" class="m-input" autocomplete="tel">
+            </div>
+            <p class="text-[10px] text-neutral-400 leading-relaxed">Your details are only used by Milaron Studio to follow up on your fit-out enquiry. We don't share your information.</p>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" onclick="plannerSubmitLead()">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">auto_fix_high</span> Generate My Layout
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 5: Results -->
+      <div id="ps-5" class="flex-1 flex flex-col overflow-hidden" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Layout Result</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Your Studio Plan</h2>
+            </div>
+            <button onclick="plannerGoTo(1)" class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 border border-black/10 rounded-lg px-3 py-2">Restart</button>
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-24 space-y-4">
+          <!-- Mini canvas -->
+          <div class="canvas-wrap" id="mini-canvas-wrap" style="height:calc(100dvh - 280px);min-height:260px;max-height:500px;">
+            <div class="dot-bg"></div>
+            <canvas id="mini-canvas" style="width:100%;height:100%;display:block;"></canvas>
+            <div class="absolute top-2 left-2 bg-black/70 text-white rounded-md px-2 py-1 text-[9px] font-bold tracking-widest uppercase" id="canvas-label">—</div>
+          </div>
+
+          <!-- Adjust qty -->
+          <div class="card p-5">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Adjust Quantity</p>
+            <div class="flex items-center gap-4">
+              <button class="stepper-btn" style="width:44px;height:44px;" onclick="adjResultQty(-1)">−</button>
+              <p class="font-manrope font-bold text-4xl flex-1 text-center" id="result-qty">4</p>
+              <button class="stepper-btn" style="width:44px;height:44px;" onclick="adjResultQty(1)">+</button>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Reformers Fit</p>
+              <p class="font-manrope font-bold text-3xl text-[#705d00]" id="res-fit">0</p>
+            </div>
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Space Used</p>
+              <p class="font-manrope font-bold text-3xl" id="res-area">0%</p>
+            </div>
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Room Size</p>
+              <p class="font-manrope font-bold text-xl" id="res-room">12 × 8 m</p>
+            </div>
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Equipment Cost</p>
+              <p class="font-manrope font-bold text-xl text-[#705d00]" id="res-cost">A$0</p>
+            </div>
+          </div>
+
+          <!-- Safety clearance -->
+          <div class="card p-5">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Safety Clearance</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Side Gap (X)</label>
+                <div class="flex items-center gap-2">
+                  <input id="res-sx" type="number" value="600" min="0" step="50" class="m-input flex-1" style="font-size:14px;padding:10px 12px;" oninput="onSafetyChange()">
+                  <span class="text-sm text-neutral-400 font-mono">mm</span>
+                </div>
+              </div>
+              <div>
+                <label class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">End Gap (Y)</label>
+                <div class="flex items-center gap-2">
+                  <input id="res-sy" type="number" value="600" min="0" step="50" class="m-input flex-1" style="font-size:14px;padding:10px 12px;" oninput="onSafetyChange()">
+                  <span class="text-sm text-neutral-400 font-mono">mm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);">
+            <div class="p-5">
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-500 mb-1">Ready to build?</p>
+              <h3 class="font-manrope font-bold text-xl text-white leading-tight mb-1">Plan your studio fit-out with Milaron</h3>
+              <p class="text-sm text-neutral-400 mb-5">Our team will help you design and fit out your studio from start to finish.</p>
+              <a href="mailto:contact@milaron.com.au" class="flex items-center gap-3 mb-3 bg-white/10 rounded-xl px-4 py-3 active:bg-white/20 transition-colors">
+                <span class="material-symbols-outlined text-[#fcd400]" style="font-size:20px;">mail</span>
+                <span class="text-white text-sm font-semibold">contact@milaron.com.au</span>
+              </a>
+              <a href="tel:0403033226" class="flex items-center gap-3 bg-[#fcd400] rounded-xl px-4 py-3 active:opacity-80 transition-opacity">
+                <span class="material-symbols-outlined text-black" style="font-size:20px;">call</span>
+                <span class="text-black text-sm font-bold">0403 033 226</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== PROFIT ANALYSIS ===== -->
+  <div id="scr-profit" class="screen">
+    <div id="profit-steps" class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- PROFIT STEP 1: Income -->
+      <div id="pp-1" class="flex-1 flex flex-col overflow-hidden slide-enter">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="step-badge" style="background:#fcd400;color:#000;">1</div>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Profit Analysis · Step 1 of 4</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Income details</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot active" style="background:#fcd400;"></div>
+            <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center px-5 pb-6 gap-5">
+          <div class="q-card space-y-5">
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Income per Reformer</label>
+              <div class="relative">
+                <input id="p-ipr" type="number" min="0" step="5" placeholder="e.g. 35" class="m-input pr-16">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-400">AUD</span>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">QTY of Reformers</label>
+              <input id="p-nr" type="number" min="1" placeholder="e.g. 6" class="m-input">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Classes per Week</label>
+              <input id="p-cpw" type="number" min="0" placeholder="e.g. 30" class="m-input">
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" style="background:#fcd400;color:#000;" onclick="profitGoTo(2)">Continue <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">arrow_forward</span></button>
+        </div>
+      </div>
+
+      <!-- PROFIT STEP 2: Overhead -->
+      <div id="pp-2" class="flex-1 flex flex-col overflow-hidden slide-enter" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <button onclick="profitGoTo(1)" class="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </button>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Profit Analysis · Step 2 of 4</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Monthly overhead</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot" style="background:#fcd400;"></div>
+            <div class="prog-dot active" style="background:#fcd400;"></div>
+            <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center px-5 pb-6 gap-5">
+          <div class="q-card space-y-5">
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Rent & Utilities <span class="text-neutral-300">(per month)</span></label>
+              <div class="relative">
+                <input id="p-rent" type="number" min="0" placeholder="e.g. 5000" class="m-input pr-16">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-400">AUD</span>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Staff & Instructors <span class="text-neutral-300">(per month)</span></label>
+              <div class="relative">
+                <input id="p-staff" type="number" min="0" placeholder="e.g. 8000" class="m-input pr-16">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-400">AUD</span>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Other Costs <span class="text-neutral-300">(per month)</span></label>
+              <div class="relative">
+                <input id="p-other" type="number" min="0" placeholder="e.g. 1000" class="m-input pr-16">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-400">AUD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" style="background:#fcd400;color:#000;" onclick="profitGoTo(3)">Continue <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">arrow_forward</span></button>
+        </div>
+      </div>
+
+      <!-- PROFIT STEP 3: Capital -->
+      <div id="pp-3" class="flex-1 flex flex-col overflow-hidden slide-enter" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <button onclick="profitGoTo(2)" class="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </button>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Profit Analysis · Step 3 of 4</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Capital expenditure</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot" style="background:#fcd400;"></div>
+            <div class="prog-dot" style="background:#fcd400;"></div>
+            <div class="prog-dot active" style="background:#fcd400;"></div>
+            <div class="prog-dot"></div><div class="prog-dot"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center px-5 pb-6 gap-5">
+          <div class="q-card space-y-5">
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Upfront Cost per Reformer</label>
+              <div class="relative">
+                <input id="p-cpr" type="number" min="0" placeholder="e.g. 3995" class="m-input pr-16">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-400">AUD</span>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Other Setup Costs</label>
+              <div class="relative">
+                <input id="p-setup" type="number" min="0" placeholder="e.g. 10000" class="m-input pr-16">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-400">AUD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" style="background:#fcd400;color:#000;" onclick="profitGoTo(4)">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">arrow_forward</span> Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- PROFIT STEP 4: Your Details (lead capture) -->
+      <div id="pp-4" class="flex-1 flex flex-col overflow-hidden slide-enter" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center gap-3 mb-6">
+            <button onclick="profitGoTo(3)" class="w-9 h-9 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </button>
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Profit Analysis · Step 4 of 4</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Almost there</h2>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-2">
+            <div class="prog-dot" style="background:#fcd400;"></div>
+            <div class="prog-dot" style="background:#fcd400;"></div>
+            <div class="prog-dot" style="background:#fcd400;"></div>
+            <div class="prog-dot active" style="background:#fcd400;"></div>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center px-5 pb-6 gap-4">
+          <div class="card p-6 space-y-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fcd400;">
+                <span class="material-symbols-outlined text-black" style="font-size:20px;">insights</span>
+              </div>
+              <div>
+                <p class="font-manrope font-bold text-base leading-tight">Get your profit analysis</p>
+                <p class="text-xs text-neutral-400">Enter your details to view your results</p>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Your Name</label>
+              <input id="pr-lead-name" type="text" placeholder="e.g. Sarah Johnson" class="m-input" autocomplete="name">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Email Address</label>
+              <input id="pr-lead-email" type="email" placeholder="e.g. sarah@studio.com.au" class="m-input" autocomplete="email">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 block mb-2">Phone <span class="text-neutral-300 normal-case tracking-normal font-normal">(optional)</span></label>
+              <input id="pr-lead-phone" type="tel" placeholder="e.g. 0400 000 000" class="m-input" autocomplete="tel">
+            </div>
+            <p class="text-[10px] text-neutral-400 leading-relaxed">Your details are only used by Milaron Studio to follow up on your fit-out enquiry. We don't share your information.</p>
+          </div>
+        </div>
+        <div class="px-5 pb-6 pt-3 flex-shrink-0">
+          <button class="btn-primary" style="background:#fcd400;color:#000;" onclick="profitSubmitLead()">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;">insights</span> View My Results
+          </button>
+        </div>
+      </div>
+
+      <!-- PROFIT STEP 5: Results -->
+      <div id="pp-5" class="flex-1 flex flex-col overflow-hidden" style="display:none!important;">
+        <div class="px-5 pt-8 pb-4 flex-shrink-0">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Profit Analysis</p>
+              <h2 class="font-manrope font-bold text-2xl leading-tight">Financial Results</h2>
+            </div>
+            <button onclick="profitGoTo(1)" class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 border border-black/10 rounded-lg px-3 py-2">Restart</button>
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-24 space-y-4">
+
+          <!-- Timeframe toggle -->
+          <div class="bg-[#eeeeee] p-1 rounded-xl flex gap-1">
+            <button class="tf-pill active" onclick="setMTF('weekly', this)">Weekly</button>
+            <button class="tf-pill" onclick="setMTF('monthly', this)">Monthly</button>
+            <button class="tf-pill" onclick="setMTF('annual', this)">Annual</button>
+          </div>
+
+          <!-- Key metrics -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="result-metric" style="background:linear-gradient(135deg,#fcd400 0%,#e8be00 100%);border-color:transparent;">
+              <p class="text-[9px] font-bold tracking-widest uppercase mb-1" style="color:rgba(0,0,0,.5);">Revenue</p>
+              <p class="font-manrope font-bold text-2xl text-black" id="pm-rev">A$0</p>
+              <p class="text-[9px] font-bold mt-1" id="pm-rev-lbl" style="color:rgba(0,0,0,.4);">PER WEEK</p>
+            </div>
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Net Profit</p>
+              <p class="font-manrope font-bold text-2xl" id="pm-net">A$0</p>
+              <p class="text-[9px] font-bold text-neutral-400 mt-1" id="pm-net-lbl">PER WEEK</p>
+            </div>
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Break-Even</p>
+              <p class="font-manrope font-bold text-2xl" id="pm-roi">—</p>
+              <p class="text-[9px] font-bold text-neutral-400 mt-1">WEEKS</p>
+            </div>
+            <div class="result-metric">
+              <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400 mb-1">Margin</p>
+              <p class="font-manrope font-bold text-2xl" id="pm-margin">0%</p>
+              <p class="text-[9px] font-bold text-neutral-400 mt-1">NET MARGIN</p>
+            </div>
+          </div>
+
+          <!-- CapEx summary -->
+          <div class="card p-5">
+            <div class="flex justify-between items-center mb-1">
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400">Total Capital Outlay</p>
+              <p class="font-manrope font-bold text-xl" id="pm-cap">A$0</p>
+            </div>
+            <div class="w-full bg-neutral-100 rounded-full h-1.5 mt-3">
+              <div id="pm-roi-bar" class="h-1.5 bg-black rounded-full transition-all" style="width:0%"></div>
+            </div>
+            <p class="text-[9px] text-neutral-400 mt-2" id="pm-roi-hint">Enter values to see break-even progress</p>
+          </div>
+
+          <!-- Editable fields -->
+          <div>
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-3">Edit Inputs</p>
+            <div class="card overflow-hidden">
+              <div class="px-4 py-2.5 bg-neutral-50 border-b border-black/5">
+                <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Income</p>
+              </div>
+              <div class="p-3 space-y-1.5">
+                <div class="editable-field">
+                  <span class="ef-label">Income per Reformer</span>
+                  <input type="number" id="e-ipr" min="0" step="5" oninput="mRecalc()">
+                  <span class="text-xs text-neutral-400 font-mono">AUD</span>
+                </div>
+                <div class="editable-field">
+                  <span class="ef-label">QTY of Reformers</span>
+                  <input type="number" id="e-nr" min="1" oninput="mRecalc()">
+                </div>
+                <div class="editable-field">
+                  <span class="ef-label">Classes per Week</span>
+                  <input type="number" id="e-cpw" min="0" oninput="mRecalc()">
+                </div>
+              </div>
+              <div class="px-4 py-2.5 bg-neutral-50 border-t border-b border-black/5">
+                <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Monthly Overhead</p>
+              </div>
+              <div class="p-3 space-y-1.5">
+                <div class="editable-field">
+                  <span class="ef-label">Rent & Utilities</span>
+                  <input type="number" id="e-rent" min="0" oninput="mRecalc()">
+                  <span class="text-xs text-neutral-400 font-mono">AUD</span>
+                </div>
+                <div class="editable-field">
+                  <span class="ef-label">Staff & Instructors</span>
+                  <input type="number" id="e-staff" min="0" oninput="mRecalc()">
+                  <span class="text-xs text-neutral-400 font-mono">AUD</span>
+                </div>
+                <div class="editable-field">
+                  <span class="ef-label">Other Monthly Costs</span>
+                  <input type="number" id="e-other" min="0" oninput="mRecalc()">
+                  <span class="text-xs text-neutral-400 font-mono">AUD</span>
+                </div>
+              </div>
+              <div class="px-4 py-2.5 bg-neutral-50 border-t border-b border-black/5">
+                <p class="text-[9px] font-bold tracking-widest uppercase text-neutral-400">Capital Expenditure</p>
+              </div>
+              <div class="p-3 space-y-1.5">
+                <div class="editable-field">
+                  <span class="ef-label">Upfront Cost per Reformer</span>
+                  <input type="number" id="e-cpr" min="0" oninput="mRecalc()">
+                  <span class="text-xs text-neutral-400 font-mono">AUD</span>
+                </div>
+                <div class="editable-field">
+                  <span class="ef-label">Other Setup Costs</span>
+                  <input type="number" id="e-setup" min="0" oninput="mRecalc()">
+                  <span class="text-xs text-neutral-400 font-mono">AUD</span>
+                </div>
+                <div class="editable-field" style="background:#f3f3f4;border-color:transparent;">
+                  <span class="ef-label">Total Capital</span>
+                  <span class="font-mono text-sm font-bold" id="e-total-cap">A$0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6-month projection -->
+          <div>
+            <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-3">6-Month Projection</p>
+            <div class="card overflow-hidden">
+              <table class="w-full text-sm">
+                <thead><tr class="border-b border-black/5 bg-neutral-50">
+                  <th class="px-4 py-3 text-left text-[9px] font-bold tracking-widest uppercase text-neutral-400">Month</th>
+                  <th class="px-4 py-3 text-right text-[9px] font-bold tracking-widest uppercase text-neutral-400">Net</th>
+                  <th class="px-4 py-3 text-right text-[9px] font-bold tracking-widest uppercase text-neutral-400">Balance</th>
+                </tr></thead>
+                <tbody id="m-cf-table" class="font-mono text-xs divide-y divide-black/5"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);">
+            <div class="p-5">
+              <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-500 mb-1">Ready to build?</p>
+              <h3 class="font-manrope font-bold text-xl text-white leading-tight mb-1">Plan your studio fit-out with Milaron</h3>
+              <p class="text-sm text-neutral-400 mb-5">Our team will help you turn these numbers into a real studio.</p>
+              <a href="mailto:contact@milaron.com.au" class="flex items-center gap-3 mb-3 bg-white/10 rounded-xl px-4 py-3 active:bg-white/20 transition-colors">
+                <span class="material-symbols-outlined text-[#fcd400]" style="font-size:20px;">mail</span>
+                <span class="text-white text-sm font-semibold">contact@milaron.com.au</span>
+              </a>
+              <a href="tel:0403033226" class="flex items-center gap-3 bg-[#fcd400] rounded-xl px-4 py-3 active:opacity-80 transition-opacity">
+                <span class="material-symbols-outlined text-black" style="font-size:20px;">call</span>
+                <span class="text-black text-sm font-bold">0403 033 226</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bot-nav">
+  <div class="nav-tab active" id="tab-dashboard" onclick="goScreen('dashboard')">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span class="nav-label">Dashboard</span>
+  </div>
+  <div class="nav-tab" id="tab-planner" onclick="goScreen('planner')">
+    <span class="material-symbols-outlined">architecture</span>
+    <span class="nav-label">Planner</span>
+  </div>
+  <div class="nav-tab" id="tab-profit" onclick="goScreen('profit')">
+    <span class="material-symbols-outlined">analytics</span>
+    <span class="nav-label">Profit</span>
+  </div>
+</nav>
+
+<!-- ===== SPEC SHEET (full-screen overlay) ===== -->
+<div id="spec-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:#fff;flex-direction:column;" class="flex flex-col">
+  <div class="flex items-center gap-3 px-5 pt-10 pb-4 border-b border-black/5 flex-shrink-0">
+    <button onclick="closeSpec()" class="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center">
+      <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
+    </button>
+    <p class="font-manrope font-bold text-xl flex-1" id="spec-overlay-title">Specs</p>
+  </div>
+  <div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-12" id="spec-overlay-body"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- ===== STYLE: timeframe pills ===== -->
+<style>
+  .tf-pill{flex:1;padding:9px 4px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#737373;cursor:pointer;border-radius:8px;background:transparent;border:none;transition:all .15s;}
+  .tf-pill.active{background:#fff;color:#000;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+</style>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const CATALOG = [
+  { id:'maple-v3',   name:'Maple Studio V3',   tier:'STUDIO',   length:2280, width:685, height:380, price:4549, img:'../MAPLE.png' },
+  { id:'pearl-v3',   name:'Pearl Studio V3',   tier:'STUDIO',   length:2356, width:635, height:350, price:3995, img:'../PEALR S.png' },
+  { id:'pearl-fold', name:'Pearl Foldable V3', tier:'FOLDABLE', length:2350, width:620, height:300, price:3900, img:'../PEALF.png' }
+];
+
+const SPECS = {
+  'maple-v3': {
+    tagline: 'Studio Pilates Reformer designed for every Pilates level — adjusts effortlessly while delivering the precision of German steel springs and reinforced rails built for advanced practitioners.',
+    sections: [
+      { title:'Construction', items:['Maple wood frame — clean lines, warm natural finish','Silicone performance leather — soft, breathable, and durable'] },
+      { title:'Carriage & Glide', items:['150–180cm of adjustable carriage travel','Undercarriage glide system — 8 wheels with ultra-low friction bearings','Built-in transport wheels — smooth, quiet movement','Footstrap included'] },
+      { title:'Springs', items:['German steel springs — 3 rows of hooks for precise tension control','2× Heavy — Red (28kg)','2× Medium — Blue (12kg)','2× Light — Yellow (9kg)'] },
+      { title:'Ergonomics', items:['Adjustable footbar — 5 positions for ergonomic alignment','Adjustable headrest — 3 positions for neck and spine support'] }
+    ]
+  },
+  'pearl-v3': {
+    tagline: 'Studio Pilates Reformer designed for every Pilates level — German piano-wire springs and reinforced rails built to satisfy advanced practitioners.',
+    sections: [
+      { title:'Construction', items:['6063-T5 aluminium frame — lightweight, sleek, and corrosion-resistant','Silicone performance leather — soft, breathable, and easy to clean'] },
+      { title:'Carriage & Glide', items:['150–180cm of adjustable carriage travel','Undercarriage glide system — 8 wheels with ultra-low friction bearings','Built-in transport wheels — smooth, quiet movement','Footstrap included'] },
+      { title:'Springs', items:['German steel springs — 2 rows of hooks for clean resistance control','2× Heavy — Red (28kg)','2× Medium — Blue (12kg)','2× Light — Yellow (9kg)'] },
+      { title:'Ergonomics', items:['Adjustable footbar — 5 ergonomic positions','Adjustable headrest — 3 comfort-aligned positions'] }
+    ]
+  },
+  'pearl-fold': {
+    tagline: 'Foldable Pilates Reformer with German steel springs and reinforced rails in a space-saving design — precision performance without the footprint.',
+    sections: [
+      { title:'Construction', items:['6063-T5 aluminium alloy frame — lightweight, sleek, and corrosion-resistant','Silicone performance leather — soft, breathable, and easy to clean'] },
+      { title:'Carriage & Glide', items:['150–180cm of adjustable carriage travel','Undercarriage glide system — 8 wheels with ultra-low friction bearings','Built-in transport wheels — smooth, quiet movement','Footstrap included'] },
+      { title:'Springs', items:['German steel springs — single row for clean resistance control','2× Heavy — Red (28kg)','2× Medium — Blue (12kg)','2× Light — Yellow (9kg)'] },
+      { title:'Ergonomics', items:['Adjustable footbar — 5 ergonomic positions','Adjustable headrest — 3 comfort-aligned positions'] }
+    ]
+  }
+};
+
+// ============================================================
+// APP STATE
+// ============================================================
+const S = {
+  screen: 'dashboard',
+  plannerStep: 1,
+  profitStep: 1,
+  selectedModel: 'maple-v3',
+  qty: 4,
+  roomW: 12, roomH: 8,
+  orientation: 'h',
+  arrangedItems: [],
+  mTF: 'weekly',
+  profit: { ipr:0, nr:1, cpw:0, rent:0, staff:0, other:0, cpr:0, setup:0 }
+};
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function goScreen(name) {
+  S.screen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('scr-' + name).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'dashboard') updateDash();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDash() {
+  const p = S.profit;
+  const qty = S.arrangedItems.length || p.nr || 0;
+  const wRev = p.ipr * qty * p.cpw;
+  const wNet = wRev - (p.rent + p.staff + p.other) / 4;
+  const fmt = n => Math.round(Math.abs(n)).toLocaleString('en-AU');
+  document.getElementById('d-qty').textContent = qty;
+  document.getElementById('d-rev').textContent = 'A$' + fmt(wRev);
+  const pe = document.getElementById('d-profit');
+  pe.textContent = (wNet < 0 ? '-' : '') + 'A$' + fmt(Math.abs(wNet));
+  pe.style.color = wNet >= 0 ? '#705d00' : '#ef4444';
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ============================================================
+// SPEC OVERLAY
+// ============================================================
+function openSpec(catalogId) {
+  const cat = CATALOG.find(c => c.id === catalogId);
+  const sp  = SPECS[catalogId];
+  if (!cat || !sp) return;
+  document.getElementById('spec-overlay-title').textContent = cat.name;
+  let html = `
+    <div class="flex items-center justify-center bg-[#f7f7f7] rounded-2xl my-4" style="height:180px;">
+      <img src="${cat.img}" alt="${cat.name}" style="height:140px;object-fit:contain;">
+    </div>
+    <p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mb-1">RRP</p>
+    <p class="font-manrope font-bold text-3xl mb-3">A$${cat.price.toLocaleString('en-AU')}</p>
+    <p class="text-sm text-neutral-500 leading-relaxed mb-6">${sp.tagline}</p>
+    <div class="grid grid-cols-3 gap-3 mb-6">
+      <div class="bg-neutral-50 rounded-xl p-3 text-center"><p class="text-[9px] font-bold uppercase text-neutral-400 mb-1">Length</p><p class="font-mono font-bold">${cat.length}mm</p></div>
+      <div class="bg-neutral-50 rounded-xl p-3 text-center"><p class="text-[9px] font-bold uppercase text-neutral-400 mb-1">Width</p><p class="font-mono font-bold">${cat.width}mm</p></div>
+      <div class="bg-neutral-50 rounded-xl p-3 text-center"><p class="text-[9px] font-bold uppercase text-neutral-400 mb-1">Height</p><p class="font-mono font-bold">${cat.height}mm</p></div>
+    </div>`;
+  sp.sections.forEach(sec => {
+    html += `<p class="text-[10px] font-bold tracking-widest uppercase text-neutral-400 mt-5 mb-3">${sec.title}</p><div class="space-y-2">`;
+    sec.items.forEach(item => {
+      const isSub = /^\d×/.test(item);
+      html += isSub
+        ? `<div class="flex items-center gap-3 pl-5"><div class="w-1.5 h-1.5 rounded-full bg-neutral-300 flex-shrink-0"></div><p class="text-sm text-neutral-500">${item}</p></div>`
+        : `<div class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-black mt-2 flex-shrink-0"></div><p class="text-sm text-neutral-700">${item}</p></div>`;
+    });
+    html += '</div>';
+  });
+  html += `<button class="btn-primary mt-8" onclick="addToPlanner('${catalogId}');closeSpec();">Add to Planner</button>`;
+  document.getElementById('spec-overlay-body').innerHTML = html;
+  const ov = document.getElementById('spec-overlay');
+  ov.style.display = 'flex';
+}
+function closeSpec() {
+  document.getElementById('spec-overlay').style.display = 'none';
+}
+function addToPlanner(catalogId) {
+  S.selectedModel = catalogId;
+  const mc = { 'maple-v3':'mc-maple','pearl-v3':'mc-pearl','pearl-fold':'mc-fold' };
+  document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+  ['maple','pearl','fold'].forEach(k => {
+    document.getElementById('check-' + k).style.background = '#e5e5e5';
+  });
+  const key = {'maple-v3':'maple','pearl-v3':'pearl','pearl-fold':'fold'}[catalogId];
+  document.getElementById('mc-' + key).classList.add('selected');
+  document.getElementById('check-' + key).style.background = '#000';
+  goScreen('planner');
+  plannerGoTo(2);
+  showToast('Model selected — adjust quantity');
+}
+
+// ============================================================
+// PLANNER FLOW
+// ============================================================
+function plannerGoTo(step) {
+  // Skip lead capture if already collected
+  if (step === 4 && getStoredLead()) { plannerGoTo(5); return; }
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('ps-' + i);
+    if (!el) continue;
+    if (i === step) { el.style.cssText = 'flex:1;flex-direction:column;overflow:hidden;'; }
+    else { el.style.cssText = 'display:none!important'; }
+  }
+  S.plannerStep = step;
+  if (step === 2) updateQtyStep();
+  if (step === 5) setTimeout(renderResult, 80);
+}
+
+function plannerSubmitLead() {
+  const name  = document.getElementById('pl-lead-name')?.value.trim();
+  const email = document.getElementById('pl-lead-email')?.value.trim();
+  if (!name || !email) { showToast('Please enter your name and email'); return; }
+  saveLead({ name, email, phone: document.getElementById('pl-lead-phone')?.value.trim() });
+  plannerGoTo(5);
+}
+
+function selectModel(id, cardEl) {
+  S.selectedModel = id;
+  document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+  ['maple','pearl','fold'].forEach(k => {
+    document.getElementById('check-' + k).style.background = '#e5e5e5';
+  });
+  const key = {'maple-v3':'maple','pearl-v3':'pearl','pearl-fold':'fold'}[id];
+  document.getElementById('check-' + key).style.background = '#000';
+}
+
+function updateQtyStep() {
+  const cat = CATALOG.find(c => c.id === S.selectedModel);
+  if (!cat) return;
+  document.getElementById('qty-display').textContent = S.qty;
+  document.getElementById('qty-model-name').textContent = cat.name;
+  document.getElementById('qty-thumb').src = cat.img;
+  document.getElementById('qty-cost').textContent = 'A$' + (cat.price * S.qty).toLocaleString('en-AU');
+}
+
+function adjQty(d) {
+  S.qty = Math.max(1, S.qty + d);
+  updateQtyStep();
+}
+
+function setPlannerOri(o) {
+  S.orientation = o;
+  const hBtn = document.getElementById('ori-h'), vBtn = document.getElementById('ori-v');
+  if (o === 'h') {
+    hBtn.className = 'border-2 border-black rounded-xl p-4 flex flex-col items-center gap-2';
+    hBtn.querySelector('div').querySelectorAll('div').forEach(d => d.style.background = '#000');
+    vBtn.className = 'border border-black/10 rounded-xl p-4 flex flex-col items-center gap-2';
+    vBtn.querySelector('div').querySelectorAll('div').forEach(d => d.style.background = '#d4d4d4');
+  } else {
+    vBtn.className = 'border-2 border-black rounded-xl p-4 flex flex-col items-center gap-2';
+    vBtn.querySelector('div').querySelectorAll('div').forEach(d => d.style.background = '#000');
+    hBtn.className = 'border border-black/10 rounded-xl p-4 flex flex-col items-center gap-2';
+    hBtn.querySelector('div').querySelectorAll('div').forEach(d => d.style.background = '#d4d4d4');
+  }
+}
+
+// Draw a rounded rect compatible with all mobile browsers
+function drawRR(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Pure calculation — populates S.arrangedItems, no DOM side-effects
+function calcLayout(safeX, safeY) {
+  const cat = CATALOG.find(c => c.id === S.selectedModel);
+  const rfW = S.orientation === 'h' ? cat.length : cat.width;
+  const rfH = S.orientation === 'h' ? cat.width  : cat.length;
+  const slotW = rfW + safeX, slotH = rfH + safeY;
+  const cols = Math.floor((S.roomW * 1000) / slotW);
+  const rows = Math.floor((S.roomH * 1000) / slotH);
+  const placed = Math.min(S.qty, cols * rows);
+  S.arrangedItems = [];
+  let c = 0;
+  outer: for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (c >= placed) break outer;
+      S.arrangedItems.push({ x: col * slotW + safeX / 2, y: row * slotH + safeY / 2, w: rfW, h: rfH });
+      c++;
+    }
+  }
+}
+
+// Paint the canvas only — no recalculation
+function paintCanvas(safeX, safeY) {
+  const canvas = document.getElementById('mini-canvas');
+  const wrap   = document.getElementById('mini-canvas-wrap');
+  if (!canvas || !wrap) return;
+  const W = wrap.offsetWidth, H = wrap.offsetHeight;
+  if (!W || !H) return;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const scX = W / (S.roomW * 1000);
+  const scY = H / (S.roomH * 1000);
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, W, H);
+
+  S.arrangedItems.forEach(item => {
+    const px = item.x * scX, py = item.y * scY;
+    const pw = item.w * scX, ph = item.h * scY;
+    const cx = safeX * scX, cy = safeY * scY;
+
+    // clearance zone
+    ctx.fillStyle = 'rgba(252,212,0,0.18)';
+    drawRR(ctx, px - cx / 2, py - cy / 2, pw + cx, ph + cy, 4);
+    ctx.fill();
+
+    // reformer body
+    ctx.fillStyle = '#1a1a1a';
+    drawRR(ctx, px, py, pw, ph, 3);
+    ctx.fill();
+  });
+}
+
+// Update result stats panel
+function updateResultStats(safeX, safeY) {
+  const cat = CATALOG.find(c => c.id === S.selectedModel);
+  const placed = S.arrangedItems.length;
+  document.getElementById('result-qty').textContent = S.qty;
+  document.getElementById('res-fit').textContent = placed;
+  document.getElementById('res-room').textContent = S.roomW + ' × ' + S.roomH + ' m';
+  document.getElementById('res-cost').textContent = 'A$' + (cat.price * S.qty).toLocaleString('en-AU');
+  const rfArea = placed * (cat.length / 1000) * (cat.width / 1000);
+  const totalArea = S.roomW * S.roomH;
+  document.getElementById('res-area').textContent = totalArea > 0 ? Math.round(rfArea / totalArea * 100) + '%' : '0%';
+  const lbl = document.getElementById('canvas-label');
+  if (placed < S.qty) {
+    lbl.textContent = placed + ' fit · ' + (S.qty - placed) + ' over capacity';
+    lbl.style.background = 'rgba(239,68,68,.8)';
+  } else {
+    lbl.textContent = placed + ' reformers placed';
+    lbl.style.background = 'rgba(0,0,0,.7)';
+  }
+  updateDash();
+}
+
+function runAutoArrange() {
+  S.roomW = parseFloat(document.getElementById('r-width').value) || 12;
+  S.roomH = parseFloat(document.getElementById('r-depth').value) || 8;
+  plannerGoTo(4);
+}
+
+function renderResult() {
+  const safeX = parseFloat(document.getElementById('res-sx')?.value) || 600;
+  const safeY = parseFloat(document.getElementById('res-sy')?.value) || 600;
+  calcLayout(safeX, safeY);
+  updateResultStats(safeX, safeY);
+  // defer paint until element is laid out in DOM
+  setTimeout(() => paintCanvas(safeX, safeY), 60);
+}
+
+function adjResultQty(d) {
+  S.qty = Math.max(1, S.qty + d);
+  renderResult();
+}
+
+function onSafetyChange() {
+  const safeX = parseFloat(document.getElementById('res-sx')?.value) || 600;
+  const safeY = parseFloat(document.getElementById('res-sy')?.value) || 600;
+  calcLayout(safeX, safeY);
+  updateResultStats(safeX, safeY);
+  paintCanvas(safeX, safeY);
+}
+
+// ============================================================
+// PROFIT FLOW
+// ============================================================
+function profitGoTo(step) {
+  // Skip lead capture if already collected
+  if (step === 4 && getStoredLead()) { profitGoTo(5); return; }
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('pp-' + i);
+    if (!el) continue;
+    if (i === step) { el.style.cssText = 'flex:1;flex-direction:column;overflow:hidden;'; }
+    else { el.style.cssText = 'display:none!important'; }
+  }
+  S.profitStep = step;
+  if (step === 5) {
+    collectProfitInputs();
+    syncEditableFields();
+    mRecalc();
+  }
+}
+
+function profitSubmitLead() {
+  const name  = document.getElementById('pr-lead-name')?.value.trim();
+  const email = document.getElementById('pr-lead-email')?.value.trim();
+  if (!name || !email) { showToast('Please enter your name and email'); return; }
+  saveLead({ name, email, phone: document.getElementById('pr-lead-phone')?.value.trim() });
+  profitGoTo(5);
+}
+
+function collectProfitInputs() {
+  const gv = id => parseFloat(document.getElementById(id)?.value) || 0;
+  S.profit.ipr   = gv('p-ipr');
+  S.profit.nr    = Math.max(1, gv('p-nr') || 1);
+  S.profit.cpw   = gv('p-cpw');
+  S.profit.rent  = gv('p-rent');
+  S.profit.staff = gv('p-staff');
+  S.profit.other = gv('p-other');
+  S.profit.cpr   = gv('p-cpr');
+  S.profit.setup = gv('p-setup');
+}
+
+function syncEditableFields() {
+  const p = S.profit;
+  const sv = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+  sv('e-ipr', p.ipr); sv('e-nr', p.nr); sv('e-cpw', p.cpw);
+  sv('e-rent', p.rent); sv('e-staff', p.staff); sv('e-other', p.other);
+  sv('e-cpr', p.cpr); sv('e-setup', p.setup);
+}
+
+function mRecalc() {
+  const gv = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const p = {
+    ipr: gv('e-ipr'), nr: Math.max(1, gv('e-nr') || 1), cpw: gv('e-cpw'),
+    rent: gv('e-rent'), staff: gv('e-staff'), other: gv('e-other'),
+    cpr: gv('e-cpr'), setup: gv('e-setup')
+  };
+  S.profit = p;
+
+  const wRev  = p.ipr * p.nr * p.cpw;
+  const mCost = p.rent + p.staff + p.other;
+  const wCost = mCost / 4;
+  const wNet  = wRev - wCost;
+  const capEx = p.cpr * p.nr + p.setup;
+  const roiWk = wNet > 0 ? Math.ceil(capEx / wNet) : Infinity;
+  const margin = wRev > 0 ? Math.round(wNet / wRev * 100) : 0;
+
+  const mul = { weekly:1, monthly:4, annual:52 }[S.mTF];
+  const lbl = { weekly:'PER WEEK', monthly:'PER MONTH', annual:'PER YEAR' }[S.mTF];
+  const fmt = n => Math.round(Math.abs(n)).toLocaleString('en-AU');
+
+  document.getElementById('pm-rev').textContent = 'A$' + fmt(wRev * mul);
+  document.getElementById('pm-rev-lbl').textContent = lbl;
+  const ne = document.getElementById('pm-net');
+  ne.textContent = (wNet < 0 ? '-' : '') + 'A$' + fmt(Math.abs(wNet * mul));
+  ne.style.color = wNet >= 0 ? '#705d00' : '#ef4444';
+  document.getElementById('pm-net-lbl').textContent = lbl;
+  document.getElementById('pm-roi').textContent = isFinite(roiWk) ? roiWk : '∞';
+  document.getElementById('pm-margin').textContent = margin + '%';
+  document.getElementById('pm-cap').textContent = 'A$' + fmt(capEx);
+  const tcEl = document.getElementById('e-total-cap');
+  if (tcEl) tcEl.textContent = 'A$' + fmt(capEx);
+
+  // ROI bar
+  const pct = isFinite(roiWk) ? Math.min(100, Math.round((52 / roiWk) * 100)) : 0;
+  document.getElementById('pm-roi-bar').style.width = pct + '%';
+  document.getElementById('pm-roi-hint').textContent = isFinite(roiWk)
+    ? 'Break-even in ' + roiWk + ' weeks (' + Math.round(roiWk / 4.3) + ' months)'
+    : 'Enter values to see break-even';
+
+  // Cash flow table
+  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  let balance = -capEx, html = '';
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    const lbl2 = MN[d.getMonth()] + ' ' + d.getFullYear();
+    const mRev = wRev * 4 * (i === 0 ? 1 : 1 + i * 0.015);
+    const net  = mRev - mCost;
+    balance += net;
+    const nc = net >= 0 ? '#16a34a' : '#ef4444';
+    const bc = balance >= 0 ? '#15803d' : '#ef4444';
+    html += `<tr>
+      <td class="px-4 py-3 font-bold text-black">${lbl2}</td>
+      <td class="px-4 py-3 text-right" style="color:${nc}">${net>=0?'+':'-'}$${fmt(Math.abs(net))}</td>
+      <td class="px-4 py-3 text-right font-bold" style="color:${bc}">${balance>=0?'+':'-'}$${fmt(Math.abs(balance))}</td>
+    </tr>`;
+  }
+  document.getElementById('m-cf-table').innerHTML = html;
+  updateDash();
+}
+
+function setMTF(tf, btn) {
+  S.mTF = tf;
+  document.querySelectorAll('.tf-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  mRecalc();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// LEAD STORAGE
+// ============================================================
+function saveLead(lead) {
+  S.lead = lead;
+  try { localStorage.setItem('milaron_lead', JSON.stringify(lead)); } catch(e) {}
+}
+
+function getStoredLead() {
+  if (S.lead) return S.lead;
+  try {
+    const raw = localStorage.getItem('milaron_lead');
+    if (raw) { S.lead = JSON.parse(raw); return S.lead; }
+  } catch(e) {}
+  return null;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// Restore any previously stored lead
+getStoredLead();
+updateDash();
+</script>
+</body>
+</html>
