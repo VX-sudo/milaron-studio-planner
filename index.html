@@ -69,6 +69,13 @@ tailwind.config = {
   .cat-card{border:1px solid #e5e5e5;border-radius:10px;padding:10px;cursor:pointer;transition:all .15s;min-width:128px;flex-shrink:0;}
   .cat-card:hover{border-color:#000;box-shadow:0 4px 16px rgba(0,0,0,.1);}
 </style>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','4081341465434495');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=4081341465434495&ev=PageView&noscript=1"/></noscript>
 </head>
 <body class="bg-[#f9f9f9] text-[#1a1c1c] font-inter overflow-hidden h-screen flex">
 
@@ -782,6 +789,7 @@ function submitLead() {
   const phone = document.getElementById('lead-phone').value.trim();
   if (!name || !email) { showToast('PLEASE ENTER YOUR NAME AND EMAIL'); return; }
   saveLead({ name, email, phone });
+  if (window.fbq) fbq('track', 'Lead');
   fetch('https://formspree.io/f/mojygggl', {
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },

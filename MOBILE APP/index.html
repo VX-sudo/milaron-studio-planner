@@ -86,6 +86,13 @@ tailwind.config = {
   .editable-field .ef-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a3a3a3;flex:1;}
   .editable-field input{font-family:monospace;font-size:15px;font-weight:700;color:#1a1a1a;background:transparent;border:none;outline:none;text-align:right;width:100px;}
 </style>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','4081341465434495');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=4081341465434495&ev=PageView&noscript=1"/></noscript>
 </head>
 <body>
 
@@ -1065,6 +1072,7 @@ function plannerSubmitLead() {
   const phone = document.getElementById('pl-lead-phone')?.value.trim();
   if (!name || !email) { showToast('Please enter your name and email'); return; }
   saveLead({ name, email, phone });
+  if (window.fbq) fbq('track', 'Lead');
   fetch('https://formspree.io/f/mojygggl', {
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -1264,6 +1272,7 @@ function profitSubmitLead() {
   const phone = document.getElementById('pr-lead-phone')?.value.trim();
   if (!name || !email) { showToast('Please enter your name and email'); return; }
   saveLead({ name, email, phone });
+  if (window.fbq) fbq('track', 'Lead');
   fetch('https://formspree.io/f/mojygggl', {
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
